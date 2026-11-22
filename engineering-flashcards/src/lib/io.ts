@@ -55,6 +55,10 @@ export function parseImport(text: string): Deck[] {
   } catch {
     throw new Error('Plik nie jest poprawnym JSON-em.')
   }
+  return parseImportData(data)
+}
+
+export function parseImportData(data: unknown): Deck[] {
   const raw = isObject(data) && Array.isArray(data.decks) ? data.decks : Array.isArray(data) ? data : [data]
   const decks = raw.map(toDeck).filter((d): d is Deck => d !== null)
   if (decks.length === 0) throw new Error('Nie znaleziono żadnego zestawu fiszek w pliku.')

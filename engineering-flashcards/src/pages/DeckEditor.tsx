@@ -33,6 +33,7 @@ export function DeckEditor({ deck: initial }: { deck: Deck }) {
   const [bulkOpen, setBulkOpen] = useState(false)
   const latest = useRef(deck)
   const dirty = useRef(false)
+  const edited = useRef(false)
 
   useEffect(() => {
     latest.current = deck
@@ -62,7 +63,7 @@ export function DeckEditor({ deck: initial }: { deck: Deck }) {
           .map((c) => ({ ...c, choices: c.choices.filter((ch) => ch.text.trim() || ch.image) }))
         if (!d.title.trim() && cards.length === 0) {
           void removeDeck(d.id)
-        } else {
+        } else if (edited.current) {
           void saveDeck({ ...d, cards })
         }
       }, 0)
@@ -71,6 +72,7 @@ export function DeckEditor({ deck: initial }: { deck: Deck }) {
 
   const update = useCallback((fn: (d: Deck) => Deck) => {
     dirty.current = true
+    edited.current = true
     setDeck(fn)
   }, [])
 

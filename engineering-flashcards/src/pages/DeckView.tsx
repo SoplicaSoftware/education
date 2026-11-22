@@ -3,14 +3,17 @@ import { EmptyState, Page, Section, TopBar } from '../components/Layout'
 import { SideContent } from '../components/RichContent'
 import { Button, ChevronRightIcon, ConfirmDialog, DropdownMenu, notify } from '../components/ui'
 import { downloadDecks } from '../lib/io'
+import { isRepoDeck, repoDeckFile } from '../lib/repoDecks'
 import { navigate } from '../lib/router'
 import { useDecks } from '../lib/store'
 import { isCardEmpty, pluralCards, studyableCards, uid } from '../lib/utils'
 import type { Deck } from '../types'
 
 export function DeckView({ deck }: { deck: Deck }) {
-  const { removeDeck, saveDeck } = useDecks()
+  const { removeDeck, saveDeck, localIds } = useDecks()
   const [confirmDelete, setConfirmDelete] = useState(false)
+  const fromRepo = isRepoDeck(deck.id)
+  const modified = fromRepo && localIds.has(deck.id)
   const playable = studyableCards(deck)
   const cards = deck.cards.filter((c) => !isCardEmpty(c))
 
@@ -35,14 +38,37 @@ export function DeckView({ deck }: { deck: Deck }) {
               items={[
                 { label: 'Eksportuj do JSON', onClick: () => downloadDecks([deck]) },
                 { label: 'Duplikuj', onClick: duplicate },
-                { label: 'Usuń zestaw', onClick: () => setConfirmDelete(true), danger: true, separatorBefore: true },
+                ...(!fromRepo
+                  ? [{ label: 'Usuń zestaw', onClick: () => setConfirmDelete(true), danger: true, separatorBefore: true }]
+                  : modified
+                    ? [
+                        {
+                          label: 'Przywróć wersję z repozytorium',
+                          onClick: () => setConfirmDelete(true),
+                          danger: true,
+                          separatorBefore: true,
+                        },
+                      ]
+                    : []),
               ]}
             />
           </>
         }
       />
       <Page>
-        {deck.description && <p className="Lead">{deck.description}</p>}
+        {(deck.description || fromRepo) && (
+          <div className="Stack">
+            {deck.description && <p className="Lead">{deck.description}</p>}
+            {fromRepo && (
+              <p className="Hint">
+                Zestaw z pliku <code>decks/{repoDeckFile(deck.id)}</code>.{' '}
+                {modified
+                  ? 'Masz lokalne zmiany – zapisane tylko w tej przeglądarce.'
+                  : 'Zmiany w edytorze zapiszą się tylko w tej przeglądarce.'}
+              </p>
+            )}
+          </div>
+        )}
 
         {playable.length === 0 ? (
           <EmptyState title="Ten zestaw jest pusty" description="Dodaj fiszki z pytaniem i odpowiedzią, aby zacząć naukę.">
@@ -104,18 +130,32 @@ export function DeckView({ deck }: { deck: Deck }) {
         )}
       </Page>
 
-      <ConfirmDialog
-        open={confirmDelete}
-        onOpenChange={setConfirmDelete}
-        title="Usunąć zestaw?"
-        description={`„${deck.title || 'Bez tytułu'}” zostanie trwale usunięty z tej przeglądarki. Jeśli chcesz go zachować, najpierw go wyeksportuj.`}
-        confirmLabel="Usuń"
-        onConfirm={async () => {
-          navigate('/')
-          await removeDeck(deck.id)
-          notify('Usunięto zestaw')
-        }}
-      />
+      {fromRepo ? (
+        <ConfirmDialog
+          open={confirmDelete}
+          onOpenChange={setConfirmDelete}
+          title="Przywrócić wersję z repozytorium?"
+          description="Twoje lokalne zmiany w tym zestawie zostaną usunięte i zobaczysz go tak, jak w pliku w repozytorium."
+          confirmLabel="Przywróć"
+          onConfirm={async () => {
+            await removeDeck(deck.id)
+            notify('Przywrócono wersję z repozytorium')
+          }}
+        />
+      ) : (
+        <ConfirmDialog
+          open={confirmDelete}
+          onOpenChange={setConfirmDelete}
+          title="Usunąć zestaw?"
+          description={`„${deck.title || 'Bez tytułu'}” zostanie trwale usunięty z tej przeglądarki. Jeśli chcesz go zachować, najpierw go wyeksportuj.`}
+          confirmLabel="Usuń"
+          onConfirm={async () => {
+            navigate('/')
+            await removeDeck(deck.id)
+            notify('Usunięto zestaw')
+          }}
+        />
+      )}
     </>
   )
 }
