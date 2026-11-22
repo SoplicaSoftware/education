@@ -1567,3 +1567,22 @@ img {
 .Results .Zoomable img {
   max-height: 9rem;
 }
+
+.AiGuide {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding: 1rem;
+  border: 1px solid var(--line);
+  background: var(--surface);
+}
+
+.AiGuide-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  flex: 1;
+  min-width: 14rem;
+}
