@@ -62,6 +62,7 @@ export function DeckList() {
       <TopBar
         title={m.appTitle}
         subtitle={m.home.subtitle}
+        backHref={{ href: '../', label: m.common.backToHub }}
         actions={
           <>
             <Segmented<Lang>

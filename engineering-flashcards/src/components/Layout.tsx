@@ -7,17 +7,32 @@ export function TopBar({
   title,
   subtitle,
   back,
+  backHref,
   actions,
 }: {
   title: ReactNode
   subtitle?: ReactNode
   back?: string
+  /** A real link out of the app (e.g. to the hub), instead of a hash route. */
+  backHref?: { href: string; label: string }
   actions?: ReactNode
 }) {
   const m = useT()
   return (
     <header className="TopBar">
       <div className="TopBar-inner">
+        {backHref && (
+          <a
+            className="Button"
+            data-variant="ghost"
+            data-size="icon"
+            href={backHref.href}
+            aria-label={backHref.label}
+            title={backHref.label}
+          >
+            <ArrowLeftIcon />
+          </a>
+        )}
         {back !== undefined && (
           <Button size="icon" variant="ghost" aria-label={m.common.back} onClick={() => navigate(back)}>
             <ArrowLeftIcon />
