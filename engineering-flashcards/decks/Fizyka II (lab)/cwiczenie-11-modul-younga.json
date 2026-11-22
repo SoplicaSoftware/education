@@ -4,7 +4,7 @@
   "decks": [
     {
       "title": "Ćwiczenie 11 – Moduł Younga",
-      "description": "Zagadnienia kontrolne do ćwiczenia 11 z Pracowni Fizycznej WFiIS AGH. Krótkie odpowiedzi; szczegóły i źródła (opis ćwiczenia 11_opis i instrukcja 11_wykon) w wyjaśnieniu pod odpowiedzią.",
+      "description": "Zagadnienia kontrolne do ćwiczenia 11 z Pracowni Fizycznej WFiIS AGH. Definicje to dosłowne cytaty z opisu ćwiczenia (11_opis) i instrukcji (11_wykon); wyprowadzenia i źródła w wyjaśnieniu.",
       "cards": [
         {
           "id": "cw11-1",
@@ -12,9 +12,9 @@
             "text": "Sformułuj prawo Hooke’a. Co to są odkształcenia sprężyste?"
           },
           "back": {
-            "text": "Odkształcenie sprężyste jest proporcjonalne do przyłożonej siły: $\\sigma = E\\,\\varepsilon$\nSprężyste – znika po usunięciu siły."
+            "text": "„[…] prawo Hooke’a mówi, że odkształcenie sprężyste ciała jest proporcjonalne do przyłożonej siły.”\n\n„Jeżeli po usunięciu siły ciało wraca do kształtu pierwotnego mówimy o odkształceniu sprężystym.”"
           },
-          "explanation": "Dla rozciąganego pręta (wzór (1) z opisu): $\\Delta l = \\dfrac{F\\,l}{E\\,S}$ – wydłużenie rośnie z siłą $F$ i długością $l$, maleje z polem przekroju $S$.\n\nPrawo obowiązuje tylko na prostoliniowym odcinku krzywej $\\sigma(\\varepsilon)$, do granicy proporcjonalności.\n\nOdkształcenie sprężyste: po usunięciu siły ciało wraca do pierwotnego kształtu.\n\nŹródła:\nhttps://pf.agh.edu.pl/home/wfiis/pracfiz/Opisy_cwiczen/11_opis.pdf"
+          "explanation": "Cytaty w odpowiedzi – opis ćwiczenia 11, str. 1.\n\n1. Zakres: „Prawo Hooke’a dotyczy dowolnego kształtu ciała i konfiguracji przyłożonych sił.”\n\n2. Dla rozciąganego pręta (wzór (1)): „Przyrost długości pręta $\\Delta l$ jest proporcjonalny do jego długości $l$ i siły $F$, a odwrotnie proporcjonalny do przekroju poprzecznego $S$”:\n$$\\Delta l = \\dfrac{F\\,l}{E\\,S}$$\n„Stała materiałowa $E$ nosi nazwę modułu Younga.”\n\n3. Postać niezależna od kształtu (wzór (2)): $\\sigma = E\\,\\varepsilon$, gdzie $\\sigma = F/S$ to naprężenie, a $\\varepsilon = \\Delta l / l$ to odkształcenie względne.\nPrzekształcenie: dzielimy (1) przez $l$ i mnożymy przez $E$:\n$$\\dfrac{\\Delta l}{l} = \\dfrac{F}{E\\,S} \\;\\Rightarrow\\; E\\,\\dfrac{\\Delta l}{l} = \\dfrac{F}{S} \\;\\Rightarrow\\; \\sigma = E\\,\\varepsilon$$\n\n4. Granica stosowalności: „Na krzywej $\\sigma(\\varepsilon)$ odcinek liniowy kończy się na tzw. granicy proporcjonalności (punkt A na rys. 1).”\n\nŹródła:\nhttps://pf.agh.edu.pl/home/wfiis/pracfiz/Opisy_cwiczen/11_opis.pdf"
         },
         {
           "id": "cw11-2",
@@ -22,9 +22,9 @@
             "text": "Pojęcie naprężenia. Rodzaje naprężeń."
           },
           "back": {
-            "text": "$\\sigma = \\dfrac{F}{S}$ [Pa] – siła na jednostkę pola przekroju.\nRodzaje: normalne $\\sigma$ (rozciągające, ściskające) i styczne $\\tau$ (ścinające, skręcające)."
+            "text": "„$\\sigma$ oznacza naprężenie normalne zdefiniowane jako stosunek przyłożonej siły do pola przekroju pręta, $\\sigma = F/S$.”\nRodzaje (wg opisu): normalne i styczne."
           },
-          "explanation": "• Normalne – prostopadłe do przekroju; powstają przy rozciąganiu, ściskaniu i zginaniu.\n• Styczne – leżą w płaszczyźnie przekroju; powstają przy ścinaniu i skręcaniu (w pracowni: ćwiczenie 12 „Moduł sztywności”).\n\nW ćwiczeniu 11 drut jest rozciągany, więc występuje naprężenie normalne rozciągające.\n\nŹródła:\nhttps://pf.agh.edu.pl/home/wfiis/pracfiz/Opisy_cwiczen/11_opis.pdf\nhttps://pkm.edu.pl/baza-wiedzy/materialy-konstrukcyjne/stale/podstawowe-warunki-wytrzymalosciowe/\nhttps://fizyka.umk.pl/~kroch/materialy/Podstawowe%20definicje.pdf"
+          "explanation": "Cytat w odpowiedzi – opis ćwiczenia 11, str. 1.\n\nNaprężenie normalne: „Przymiotnik normalne oznacza, że dla przypadku rozciągania pręta tak siła jak i wektor przyrostu długości są prostopadłe do przekroju poprzecznego.”\n\nNaprężenie styczne: „Przypadek naprężeń i odkształceń stycznych omawiany jest w ćwiczeniu 12 „Moduł sztywności”.” Siła działa wtedy w płaszczyźnie przekroju.\n\nJednostka (wynika ze wzoru): $[\\sigma] = \\dfrac{\\mathrm{N}}{\\mathrm{m^2}} = \\mathrm{Pa}$.\n\nPoza opisem – podział wg rodzaju obciążenia (PKM): rozciąganie i ściskanie dają naprężenia normalne, ścinanie i skręcanie – styczne, zginanie – normalne.\n\nW ćwiczeniu 11 drut jest rozciągany, więc występuje naprężenie normalne.\n\nŹródła:\nhttps://pf.agh.edu.pl/home/wfiis/pracfiz/Opisy_cwiczen/11_opis.pdf\nhttps://pkm.edu.pl/baza-wiedzy/materialy-konstrukcyjne/stale/podstawowe-warunki-wytrzymalosciowe/"
         },
         {
           "id": "cw11-3",
@@ -32,9 +32,9 @@
             "text": "Co to jest odkształcenie względne?"
           },
           "back": {
-            "text": "$\\varepsilon = \\dfrac{\\Delta l}{l}$ – przyrost długości podzielony przez długość początkową (bez jednostki)."
+            "text": "„$\\varepsilon$ oznacza normalne odkształcenie względne, równe stosunkowi przyrostu długości do długości początkowej, $\\varepsilon = \\Delta l / l$.”"
           },
-          "explanation": "Często podaje się je w procentach. Dzięki temu, że jest względne, opisuje odkształcenie niezależnie od wymiarów próbki – podobnie jak naprężenie $\\sigma = F/S$.\n\nŹródła:\nhttps://pf.agh.edu.pl/home/wfiis/pracfiz/Opisy_cwiczen/11_opis.pdf"
+          "explanation": "Cytat w odpowiedzi – opis ćwiczenia 11, str. 1.\n\nJednostka (wynika ze wzoru): $\\dfrac{\\mathrm{m}}{\\mathrm{m}}$ – odkształcenie względne jest bezwymiarowe, często podaje się je w procentach.\n\nPo co „względne”: razem z $\\sigma = F/S$ pozwala zapisać prawo Hooke’a jako $\\sigma = E\\,\\varepsilon$ – wzór (2), który według opisu „charakteryzuje stan naprężeń i odkształceń w rozciąganej próbce w sposób niezależny od jej kształtu”.\n\nPrzykład: drut $l = 1\\,\\mathrm{m}$ wydłużony o $\\Delta l = 0{,}5\\,\\mathrm{mm}$ ma $\\varepsilon = \\dfrac{0{,}5\\cdot 10^{-3}}{1} = 5\\cdot 10^{-4} = 0{,}05\\%$.\n\nŹródła:\nhttps://pf.agh.edu.pl/home/wfiis/pracfiz/Opisy_cwiczen/11_opis.pdf"
         },
         {
           "id": "cw11-4",
@@ -42,9 +42,9 @@
             "text": "Moduł Younga – podaj definicję i jednostkę."
           },
           "back": {
-            "text": "$E = \\dfrac{\\sigma}{\\varepsilon}$ – stała materiałowa łącząca naprężenie z odkształceniem względnym.\nJednostka: Pa (N/m²), w praktyce GPa."
+            "text": "„Stała materiałowa $E$ nosi nazwę modułu Younga” – stała ze wzoru (1): $\\Delta l = \\dfrac{F\\,l}{E\\,S}$.\n\n„Wartość modułu Younga można by określić jako naprężenie, przy którym długość rozciąganego ciała ulega podwojeniu.”\n\nJednostka: Pa (N/m²), w tabeli 1 – GPa."
           },
-          "explanation": "Z prawa Hooke’a: $E = \\dfrac{F\\,l}{S\\,\\Delta l}$.\n\nInterpretacja: naprężenie, przy którym długość ciała by się podwoiła, gdyby prawo Hooke’a nadal obowiązywało.\n\nWartości z tabeli 1: stal 210–220 GPa, mosiądz 100 GPa, miedź 110–130 GPa, aluminium 70 GPa.\n\nŹródła:\nhttps://pf.agh.edu.pl/home/wfiis/pracfiz/Opisy_cwiczen/11_opis.pdf"
+          "explanation": "Cytaty w odpowiedzi – opis ćwiczenia 11, str. 1–2. Wzór (1) opis nazywa wzorem definicyjnym: metoda polega „na bezpośrednim pomiarze wielkości wchodzących do wzoru definicyjnego (1)”.\n\n1. Skąd się bierze $E$ – prawo Hooke’a: „odkształcenie sprężyste ciała jest proporcjonalne do przyłożonej siły”. Dla rozciąganego pręta $\\Delta l$ rośnie z siłą $F$ i długością $l$, maleje z przekrojem $S$, a współczynnikiem proporcjonalności jest $\\dfrac{1}{E}$:\n$$\\Delta l = \\dfrac{F\\,l}{E\\,S} \\quad (1)$$\n2. Przekształcenie do wzoru (2): dzielimy przez $l$ i mnożymy przez $E$:\n$$E\\,\\dfrac{\\Delta l}{l} = \\dfrac{F}{S} \\;\\Rightarrow\\; \\sigma = E\\,\\varepsilon \\;\\Rightarrow\\; E = \\dfrac{\\sigma}{\\varepsilon} = \\dfrac{F\\,l}{S\\,\\Delta l}$$\n3. Jednostka: $\\sigma$ ma jednostkę $\\mathrm{N/m^2} = \\mathrm{Pa}$, a $\\varepsilon$ jest bezwymiarowe, więc $[E] = \\mathrm{Pa}$.\n\n4. Skąd podwojenie długości: długość się podwaja, gdy $\\Delta l = l$, czyli $\\varepsilon = 1$. Wtedy z $\\sigma = E\\,\\varepsilon$ wychodzi $\\sigma = E$. Opis zaznacza, że to tylko interpretacja: „W rzeczywistości prawo Hooke’a przestaje obowiązywać (może za wyjątkiem gumy) przy znacznie mniejszych odkształceniach.”\n\n5. Wartości z tabeli 1: stal 210–220 GPa, mosiądz 100 GPa, miedź 110–130 GPa, aluminium 70 GPa.\n\nŹródła:\nhttps://pf.agh.edu.pl/home/wfiis/pracfiz/Opisy_cwiczen/11_opis.pdf"
         },
         {
           "id": "cw11-5",
@@ -52,9 +52,9 @@
             "text": "Co dzieje się z drutem po przekroczeniu granicy sprężystości?"
           },
           "back": {
-            "text": "Odkształca się plastycznie – trwale się wydłuża i nie wraca do pierwotnej długości. Przy dalszym obciążaniu się zrywa."
+            "text": "„Po przekroczeniu granicy sprężystości (punkt B) rozpoczyna się nieodwracalne odkształcenie materiału. Wreszcie po przekroczeniu maksymalnego naprężenia (punkt C) materiał ulega zerwaniu (punkt D).”"
           },
-          "explanation": "Na krzywej $\\sigma(\\varepsilon)$: granica proporcjonalności (A) → granica sprężystości (B, od niej odkształcenie nieodwracalne) → naprężenie maksymalne (C) → zerwanie (D).\n\nMateriały kruche nie mają zakresu plastycznego – po przekroczeniu określonego naprężenia pękają.\n\nDlatego w ćwiczeniu nie przekracza się obciążenia: drut stalowy 10 kg, mosiężny i miedziany 6 kg.\n\nŹródła:\nhttps://pf.agh.edu.pl/home/wfiis/pracfiz/Opisy_cwiczen/11_opis.pdf\nhttps://pf.agh.edu.pl/home/wfiis/pracfiz/Opisy_cwiczen/11_wykon.pdf"
+          "explanation": "Cytat w odpowiedzi – opis ćwiczenia 11, str. 2 (rys. 1).\n\nKolejne punkty krzywej $\\sigma(\\varepsilon)$ dla większości metali:\n• A – granica proporcjonalności: „odcinek liniowy kończy się na tzw. granicy proporcjonalności”, do niej obowiązuje prawo Hooke’a,\n• B – granica sprężystości: od niej odkształcenie jest nieodwracalne (trwałe) – drut po zdjęciu ciężarków nie wraca do pierwotnej długości,\n• C – naprężenie maksymalne,\n• D – zerwanie.\n\nMateriały kruche: „prawo Hooke’a obowiązuje do określonego naprężenia, po przekroczeniu którego materiał pęka.”\n\nDlatego w ćwiczeniu nie przekracza się obciążenia – instrukcja: „maksymalne obciążenie dla drutu stalowego 10 kg, dla drutu mosiężnego i miedzianego 6 kg.”\n\nŹródła:\nhttps://pf.agh.edu.pl/home/wfiis/pracfiz/Opisy_cwiczen/11_opis.pdf\nhttps://pf.agh.edu.pl/home/wfiis/pracfiz/Opisy_cwiczen/11_wykon.pdf"
         },
         {
           "id": "cw11-6",
@@ -62,9 +62,9 @@
             "text": "Dlaczego zmiany długości drutu są dwa razy mniejsze od zmian długości podawanych przez czujnik?"
           },
           "back": {
-            "text": "Bo czujnik mierzy przez dźwignię: drut jest zamocowany w połowie ramienia, więc czujnik pokazuje 2× więcej.\n$\\Delta l = \\dfrac{\\text{odczyt}}{2}$"
+            "text": "„Pręt i szalka zamocowane są w połowie odległości między osią obrotu a punktem styku z czujnikiem. Wydłużenie drutu $\\Delta l$ jest zatem dwukrotnie mniejsze od wartości wskazywanej przez czujnik.”"
           },
-          "explanation": "Drut i szalka są w połowie odległości między osią obrotu dźwigni a punktem styku z czujnikiem, więc koniec dźwigni przesuwa się dwa razy bardziej niż drut się wydłuża.\n\nW opracowaniu średnie wydłużenie z odczytów przy dokładaniu ($cz\\uparrow$) i zdejmowaniu ($cz\\downarrow$) ciężarków: $\\Delta l = \\dfrac{cz\\uparrow + cz\\downarrow}{4}$ – dzieli się przez 4, a nie przez 2, właśnie przez dźwignię.\n\nŹródła:\nhttps://pf.agh.edu.pl/home/wfiis/pracfiz/Opisy_cwiczen/11_opis.pdf\nhttps://pf.agh.edu.pl/home/wfiis/pracfiz/Opisy_cwiczen/11_wykon.pdf"
+          "explanation": "Cytat w odpowiedzi – opis ćwiczenia 11, str. 3.\n\nDlaczego dwa razy: dźwignia C obraca się wokół osi. Punkt w odległości $r$ od osi (drut) przesuwa się o $\\Delta l$, a punkt w odległości $2r$ (czujnik) – o $2\\,\\Delta l$, bo przy małym kącie obrotu przesunięcie jest proporcjonalne do odległości od osi:\n$$\\Delta l = \\dfrac{\\text{odczyt czujnika}}{2}$$\nW opracowaniu (instrukcja, pkt 3): „oblicz średnią wartość wydłużenia jako $\\Delta l = (cz\\uparrow + cz\\downarrow)/4$. (Przy obliczaniu średniej dzielimy przez 4 a nie przez 2 by uwzględnić też działanie dźwigni).”\nCzyli: $/2$ to średnia z dwóch odczytów, a drugie $/2$ – dźwignia.\n\nŹródła:\nhttps://pf.agh.edu.pl/home/wfiis/pracfiz/Opisy_cwiczen/11_opis.pdf\nhttps://pf.agh.edu.pl/home/wfiis/pracfiz/Opisy_cwiczen/11_wykon.pdf"
         },
         {
           "id": "cw11-7",
@@ -72,9 +72,9 @@
             "text": "Czym różni się wzór definicyjny modułu Younga od wzoru roboczego?"
           },
           "back": {
-            "text": "Definicyjny: $E = \\dfrac{F\\,l}{S\\,\\Delta l}$ – z jednego pomiaru.\nRoboczy: $E = \\dfrac{4\\,l}{\\pi d^2 a}$ – z nachylenia $a$ prostej dopasowanej do wielu pomiarów i średnicy $d$."
+            "text": "Definicyjny (1): $\\Delta l = \\dfrac{F\\,l}{E\\,S}$ – metoda polega „na bezpośrednim pomiarze wielkości wchodzących do wzoru definicyjnego (1)”.\nRoboczy (3): $E = \\dfrac{4\\,l}{\\pi d^2 a}$ – zamiast $\\Delta l$ i $F$ ma nachylenie $a$ prostej $\\Delta l(F)$, zamiast $S$ – średnicę $d$."
           },
-          "explanation": "Wzór definicyjny to wzór (1) z opisu: $\\Delta l = \\dfrac{F\\,l}{E\\,S}$.\n\nWzór roboczy (3):\n• zamiast pojedynczego $\\Delta l / F$ używa współczynnika nachylenia $a$ prostej $\\Delta l = aF + b$ dopasowanej metodą najmniejszych kwadratów ($a = \\dfrac{l}{ES}$),\n• pole przekroju wyraża przez zmierzoną średnicę: $S = \\dfrac{\\pi d^2}{4}$.\n\nJeśli prostą dopasowuje się do wykresu $\\Delta l(m)$ zamiast $\\Delta l(F)$, trzeba dodać $g$: $E = \\dfrac{4\\,l\\,g}{\\pi d^2 a}$.\n\nŹródła:\nhttps://pf.agh.edu.pl/home/wfiis/pracfiz/Opisy_cwiczen/11_opis.pdf\nhttps://pf.agh.edu.pl/home/wfiis/pracfiz/Opisy_cwiczen/11_wykon.pdf"
+          "explanation": "Cytaty – opis ćwiczenia 11, str. 2–3.\n\nWyprowadzenie wzoru roboczego:\n1. „Zgodnie z prawem Hooke’a zależność $\\Delta l(F)$ winna być linią prostą $\\Delta l = aF + b$.”\n2. „Porównanie równania prostej $\\Delta l = aF + b$ z wzorem (1) pokazuje, że współczynnik nachylenia $a$ jest tożsamy z czynnikiem $\\dfrac{l}{ES}$, zatem $E = \\dfrac{l}{S\\,a}$.”\n3. „pole przekroju drutu $S$ obliczamy ze średnicy $d$ jako $S = \\pi d^2/4$”, więc:\n$$E = \\dfrac{l}{\\frac{\\pi d^2}{4}\\,a} = \\dfrac{4\\,l}{\\pi d^2 a} \\quad (3)$$\nPraktyczna różnica: wzór (1) wymaga jednej pary $F$, $\\Delta l$, a wzór (3) korzysta z prostej dopasowanej metodą najmniejszych kwadratów do wielu pomiarów (instrukcja, pkt 6–7). Niepewność $u(a)$ „pochodzi od błędu przypadkowego pomiaru $\\Delta l$”.\n\nWariant z wykresem $\\Delta l(m)$ (instrukcja): „Wzór roboczy (3) należy w tym przypadku zmodyfikować, uwzględniając w nim wartość przyspieszenia ziemskiego”: skoro $F = mg$, to $E = \\dfrac{4\\,l\\,g}{\\pi d^2 a}$.\n\nŹródła:\nhttps://pf.agh.edu.pl/home/wfiis/pracfiz/Opisy_cwiczen/11_opis.pdf\nhttps://pf.agh.edu.pl/home/wfiis/pracfiz/Opisy_cwiczen/11_wykon.pdf"
         }
       ]
     }
