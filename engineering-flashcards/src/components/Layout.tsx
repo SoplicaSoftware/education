@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 import { navigate } from '../lib/router'
-import { Button } from './ui'
+import { ArrowLeftIcon, Button } from './ui'
 
 export function TopBar({
   title,
@@ -14,18 +14,39 @@ export function TopBar({
   actions?: ReactNode
 }) {
   return (
-    <header>
-      {back !== undefined && <Button onClick={() => navigate(back)}>← Wstecz</Button>}
-      <h1>{title}</h1>
-      {subtitle && <p>{subtitle}</p>}
-      {actions && <nav>{actions}</nav>}
-      <hr />
+    <header className="TopBar">
+      <div className="TopBar-inner">
+        {back !== undefined && (
+          <Button size="icon" variant="ghost" aria-label="Wstecz" onClick={() => navigate(back)}>
+            <ArrowLeftIcon />
+          </Button>
+        )}
+        <div className="TopBar-titles">
+          <h1>{title}</h1>
+          {subtitle && <p className="TopBar-subtitle">{subtitle}</p>}
+        </div>
+        {actions && <nav className="TopBar-actions">{actions}</nav>}
+      </div>
     </header>
   )
 }
 
 export function Page({ children }: { children: ReactNode }) {
-  return <main>{children}</main>
+  return <main className="Page">{children}</main>
+}
+
+export function Section({ title, actions, children }: { title?: ReactNode; actions?: ReactNode; children: ReactNode }) {
+  return (
+    <section className="Section">
+      {(title || actions) && (
+        <div className="Section-header">
+          {title && <h2>{title}</h2>}
+          {actions}
+        </div>
+      )}
+      {children}
+    </section>
+  )
 }
 
 export function EmptyState({
@@ -38,14 +59,18 @@ export function EmptyState({
   children?: ReactNode
 }) {
   return (
-    <section>
+    <section className="EmptyState">
       <h2>{title}</h2>
       <p>{description}</p>
-      {children && <div>{children}</div>}
+      {children && <div className="Row">{children}</div>}
     </section>
   )
 }
 
 export function Spinner() {
-  return <p role="status">Wczytywanie…</p>
+  return (
+    <p className="Spinner" role="status">
+      Wczytywanie…
+    </p>
+  )
 }

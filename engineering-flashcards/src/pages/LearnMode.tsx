@@ -1,7 +1,18 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { Page, TopBar } from '../components/Layout'
+import { Button as BaseButton } from '@base-ui/react/button'
+import { Page, Section, TopBar } from '../components/Layout'
 import { SideContent } from '../components/RichContent'
-import { Button, ProgressBar, Segmented, Sheet, Switch, TextInput } from '../components/ui'
+import {
+  Button,
+  CheckIcon,
+  Field,
+  FieldControl,
+  Fieldset,
+  ProgressBar,
+  Segmented,
+  Sheet,
+  Switch,
+} from '../components/ui'
 import {
   DEFAULT_SETTINGS,
   QUESTION_TYPE_LABELS,
@@ -186,44 +197,71 @@ export function LearnMode({ deck }: { deck: Deck }) {
 
       {phase === 'setup' ? (
         <Page>
-          <h2>Ustaw sesję nauki</h2>
-          <p>
-            Fiszka jest opanowana, gdy odpowiesz na nią poprawnie dwa razy – najpierw rozpoznając odpowiedź, potem
-            wpisując ją samodzielnie.
-          </p>
+          <Section title="Ustaw sesję nauki">
+            <p className="Muted">
+              Fiszka jest opanowana, gdy odpowiesz na nią poprawnie dwa razy – najpierw rozpoznając odpowiedź, potem
+              wpisując ją samodzielnie.
+            </p>
+          </Section>
           <LearnSettingsForm settings={settings} onChange={setSettings} />
-          <Button onClick={() => start()}>Zacznij naukę</Button>
+          <div>
+            <Button variant="primary" size="lg" onClick={() => start()}>
+              Zacznij naukę
+            </Button>
+          </div>
         </Page>
       ) : phase === 'done' ? (
         <Page>
-          <h2>Cały zestaw opanowany</h2>
-          <p>
-            Wszystkie fiszki ({cards.length}) zaliczone w rundach: {session?.roundNumber}.
-          </p>
-          <Button onClick={() => start()}>Ucz się od nowa</Button>{' '}
-          <Button onClick={() => navigate(`/deck/${deck.id}/flashcards`)}>Powtórz na fiszkach</Button>
+          <LearnProgress counts={counts} total={cards.length} />
+          <Section title="Cały zestaw opanowany">
+            <p className="Lead">
+              Wszystkie fiszki ({cards.length}) zaliczone w rundach: {session?.roundNumber}.
+            </p>
+            <div className="Row">
+              <Button variant="primary" onClick={() => start()}>
+                Ucz się od nowa
+              </Button>
+              <Button onClick={() => navigate(`/deck/${deck.id}/flashcards`)}>Powtórz na fiszkach</Button>
+            </div>
+          </Section>
         </Page>
       ) : phase === 'summary' && session ? (
         <Page>
           <LearnProgress counts={counts} total={cards.length} />
-          <h2>Koniec rundy {session.roundNumber}</h2>
-          <p>
-            Poprawnie: {session.results.filter((r) => r.correct).length} z {session.results.length}.
-          </p>
-          <ol>
-            {session.results.map((r, i) => {
-              const card = byId.get(r.cardId)
-              if (!card) return null
-              return (
-                <li key={`${r.cardId}-${i}`}>
-                  <strong>{r.correct ? '✓ Dobrze' : '✗ Źle'}</strong>
-                  <SideContent side={card.front} />
-                  <SideContent side={card.back} />
-                </li>
-              )
-            })}
-          </ol>
-          <Button onClick={continueRound}>Następna runda</Button>
+          <Section
+            title={`Koniec rundy ${session.roundNumber}`}
+            actions={
+              <Button variant="primary" onClick={continueRound}>
+                Następna runda
+              </Button>
+            }
+          >
+            <p className="Lead">
+              Poprawnie: {session.results.filter((r) => r.correct).length} z {session.results.length}.
+            </p>
+            <ol className="Results">
+              {session.results.map((r, i) => {
+                const card = byId.get(r.cardId)
+                if (!card) return null
+                return (
+                  <li key={`${r.cardId}-${i}`}>
+                    <span
+                      className="Mark"
+                      data-correct={r.correct || undefined}
+                      data-wrong={!r.correct || undefined}
+                      aria-label={r.correct ? 'Dobrze' : 'Źle'}
+                    >
+                      {r.correct ? '✓' : '✕'}
+                    </span>
+                    <SideContent side={card.front} />
+                    <div className="CardRow-back">
+                      <SideContent side={card.back} />
+                    </div>
+                  </li>
+                )
+              })}
+            </ol>
+          </Section>
         </Page>
       ) : question ? (
         <Page>
@@ -259,9 +297,8 @@ export function LearnMode({ deck }: { deck: Deck }) {
 
 function LearnSettingsForm({ settings, onChange }: { settings: LearnSettings; onChange: (s: LearnSettings) => void }) {
   return (
-    <div>
-      <fieldset>
-        <legend>Typy pytań</legend>
+    <div className="SettingsForm">
+      <Fieldset legend="Typy pytań">
         <Segmented<QuestionType>
           label="Typy pytań"
           multiple
@@ -269,9 +306,8 @@ function LearnSettingsForm({ settings, onChange }: { settings: LearnSettings; on
           onChange={(types) => onChange({ ...settings, types })}
           options={(['mc', 'tf', 'written'] as const).map((t) => ({ value: t, label: QUESTION_TYPE_LABELS[t] }))}
         />
-      </fieldset>
-      <fieldset>
-        <legend>Odpowiadaj za pomocą</legend>
+      </Fieldset>
+      <Fieldset legend="Odpowiadaj za pomocą">
         <Segmented<AnswerWith>
           label="Odpowiadaj za pomocą"
           value={[settings.answerWith]}
@@ -282,21 +318,18 @@ function LearnSettingsForm({ settings, onChange }: { settings: LearnSettings; on
             { value: 'both', label: 'Obu' },
           ]}
         />
-        <p>
-          <small>
-            „Tyłu” – widzisz pytanie, podajesz odpowiedź. Fiszki z własnymi odpowiedziami ABCD zawsze pytają o tył.
-          </small>
+        <p className="Hint">
+          „Tyłu” – widzisz pytanie, podajesz odpowiedź. Fiszki z własnymi odpowiedziami ABCD zawsze pytają o tył.
         </p>
-      </fieldset>
-      <fieldset>
-        <legend>Fiszek w rundzie</legend>
+      </Fieldset>
+      <Fieldset legend="Fiszek w rundzie">
         <Segmented<string>
           label="Fiszek w rundzie"
           value={[String(settings.roundSize)]}
           onChange={([v]) => onChange({ ...settings, roundSize: Number(v) })}
           options={['5', '7', '10', '20'].map((v) => ({ value: v, label: v }))}
         />
-      </fieldset>
+      </Fieldset>
       <Switch label="Losowa kolejność" checked={settings.shuffle} onCheckedChange={(shuffle) => onChange({ ...settings, shuffle })} />
     </div>
   )
@@ -304,11 +337,19 @@ function LearnSettingsForm({ settings, onChange }: { settings: LearnSettings; on
 
 function LearnProgress({ counts, total }: { counts: { new: number; learning: number; mastered: number }; total: number }) {
   return (
-    <div>
+    <div className="Stack">
       <ProgressBar value={(counts.mastered / Math.max(1, total)) * 100} label="Opanowane" />
-      <p>
-        Nowe: {counts.new} · W trakcie: {counts.learning} · Opanowane: {counts.mastered}
-      </p>
+      <div className="Stats">
+        <span>
+          Nowe: <strong>{counts.new}</strong>
+        </span>
+        <span>
+          W trakcie: <strong>{counts.learning}</strong>
+        </span>
+        <span>
+          Opanowane: <strong>{counts.mastered}</strong>
+        </span>
+      </div>
     </div>
   )
 }
@@ -323,9 +364,11 @@ function QuestionView({
   onAnswer: (correct: boolean, extra?: Partial<Feedback>) => void
 }) {
   return (
-    <section>
-      <h2>{question.prompt === question.card.front ? 'Pytanie' : 'Odpowiedź'}</h2>
-      <SideContent side={question.prompt} />
+    <section className="Question">
+      <h2 className="Flashcard-label">{question.prompt === question.card.front ? 'Pytanie' : 'Odpowiedź'}</h2>
+      <div className="Question-prompt">
+        <SideContent side={question.prompt} />
+      </div>
       {question.kind === 'mc' && <MultipleChoice question={question} feedback={feedback} onAnswer={onAnswer} />}
       {question.kind === 'tf' && <TrueFalse question={question} feedback={feedback} onAnswer={onAnswer} />}
       {question.kind === 'written' && <Written question={question} feedback={feedback} onAnswer={onAnswer} />}
@@ -376,10 +419,10 @@ function MultipleChoice({
   }, [question.options])
 
   return (
-    <div>
-      <p>{question.multi ? 'Zaznacz wszystkie poprawne odpowiedzi:' : 'Wybierz poprawną odpowiedź:'}</p>
-      <ol type="A">
-        {question.options.map((o) => {
+    <div className="Stack">
+      <p className="Muted">{question.multi ? 'Zaznacz wszystkie poprawne odpowiedzi:' : 'Wybierz poprawną odpowiedź:'}</p>
+      <ol className="Options">
+        {question.options.map((o, i) => {
           const picked = (feedback?.selected ?? selected).includes(o.id)
           const result = !answered
             ? undefined
@@ -392,22 +435,37 @@ function MultipleChoice({
                 : undefined
           return (
             <li key={o.id}>
-              <Button disabled={answered} onClick={() => choose(o.id)} aria-pressed={picked} data-result={result}>
-                {question.multi && (picked ? '☑ ' : '☐ ')}
-                <SideContent side={o.side} />
-              </Button>
-              {result === 'correct' && ' ✓ poprawna'}
-              {result === 'missed' && ' ✓ poprawna (nie zaznaczona)'}
-              {result === 'wrong' && ' ✗ błędna'}
+              <BaseButton
+                className="Option"
+                disabled={answered}
+                onClick={() => choose(o.id)}
+                aria-pressed={picked}
+                data-result={result}
+              >
+                <span className="Option-key">{picked && question.multi ? <CheckIcon /> : String.fromCharCode(65 + i)}</span>
+                <span className="Option-body">
+                  <SideContent side={o.side} />
+                </span>
+                {result && (
+                  <span className="Option-result">
+                    {result === 'correct' && '✓ poprawna'}
+                    {result === 'missed' && '✓ pominięta'}
+                    {result === 'wrong' && '✕ błędna'}
+                  </span>
+                )}
+              </BaseButton>
             </li>
           )
         })}
       </ol>
       {question.multi && !answered && (
-        <Button disabled={selected.length === 0} onClick={() => submit(selected)}>
-          Sprawdź
-        </Button>
+        <div>
+          <Button variant="primary" disabled={selected.length === 0} onClick={() => submit(selected)}>
+            Sprawdź
+          </Button>
+        </div>
       )}
+      {!answered && <p className="Hint">Możesz też wybierać klawiszami 1–{question.options.length}.</p>}
     </div>
   )
 }
@@ -423,18 +481,20 @@ function TrueFalse({
 }) {
   const answered = feedback !== null
   return (
-    <div>
-      <p>Czy to poprawna odpowiedź?</p>
-      <blockquote>
+    <div className="Stack">
+      <p className="Muted">Czy to poprawna odpowiedź?</p>
+      <blockquote className="Candidate">
         <SideContent side={question.candidate} />
       </blockquote>
-      <Button disabled={answered} onClick={() => onAnswer(question.isTrue, { selected: ['true'] })}>
-        Prawda
-      </Button>{' '}
-      <Button disabled={answered} onClick={() => onAnswer(!question.isTrue, { selected: ['false'] })}>
-        Fałsz
-      </Button>
-      {answered && <p>To {question.isTrue ? 'prawda' : 'fałsz'}.</p>}
+      <div className="TwoButtons">
+        <Button disabled={answered} onClick={() => onAnswer(question.isTrue, { selected: ['true'] })}>
+          Prawda
+        </Button>
+        <Button disabled={answered} onClick={() => onAnswer(!question.isTrue, { selected: ['false'] })}>
+          Fałsz
+        </Button>
+      </div>
+      {answered && <p className="Muted">To {question.isTrue ? 'prawda' : 'fałsz'}.</p>}
     </div>
   )
 }
@@ -452,6 +512,7 @@ function Written({
   const answered = feedback !== null
   return (
     <form
+      className="WrittenForm"
       onSubmit={(e) => {
         e.preventDefault()
         if (answered || !value.trim()) return
@@ -459,9 +520,9 @@ function Written({
         onAnswer(result !== 'wrong', { given: value, typo: result === 'typo' })
       }}
     >
-      <label>
-        Wpisz odpowiedź{' '}
-        <TextInput
+      <Field label="Wpisz odpowiedź">
+        <FieldControl
+          className="Input"
           value={value}
           onValueChange={setValue}
           disabled={answered}
@@ -470,17 +531,16 @@ function Written({
           autoCapitalize="off"
           spellCheck={false}
         />
-      </label>
+      </Field>
       {!answered && (
-        <>
-          {' '}
-          <Button type="submit" disabled={!value.trim()}>
+        <div className="Row">
+          <Button variant="primary" type="submit" disabled={!value.trim()}>
             Sprawdź
-          </Button>{' '}
-          <Button type="button" onClick={() => onAnswer(false, { given: '' })}>
+          </Button>
+          <Button type="button" variant="ghost" onClick={() => onAnswer(false, { given: '' })}>
             Nie wiem
           </Button>
-        </>
+        </div>
       )}
     </form>
   )
@@ -499,17 +559,28 @@ function SelfCheck({
   if (feedback) return null
   if (!revealed) {
     return (
-      <div>
-        <p>Przypomnij sobie odpowiedź, a potem ją odkryj.</p>
-        <Button onClick={() => setRevealed(true)}>Pokaż odpowiedź</Button>
+      <div className="Stack">
+        <p className="Muted">Przypomnij sobie odpowiedź, a potem ją odkryj.</p>
+        <div>
+          <Button variant="primary" onClick={() => setRevealed(true)}>
+            Pokaż odpowiedź
+          </Button>
+        </div>
       </div>
     )
   }
   return (
-    <div>
-      <SideContent side={question.answer} />
-      <p>Czy znałeś odpowiedź?</p>
-      <Button onClick={() => onAnswer(false)}>Nie</Button> <Button onClick={() => onAnswer(true)}>Tak</Button>
+    <div className="Stack">
+      <blockquote className="Candidate">
+        <SideContent side={question.answer} />
+      </blockquote>
+      <p className="Muted">Czy znałeś odpowiedź?</p>
+      <div className="TwoButtons">
+        <Button onClick={() => onAnswer(false)}>Nie</Button>
+        <Button variant="primary" onClick={() => onAnswer(true)}>
+          Tak
+        </Button>
+      </div>
     </div>
   )
 }
@@ -526,8 +597,8 @@ function FeedbackPanel({
   onOverride?: () => void
 }) {
   return (
-    <aside role="status" data-correct={feedback.correct}>
-      <h3>
+    <aside className="Feedback" role="status" data-correct={feedback.correct}>
+      <h3 className="Feedback-title">
         {feedback.correct
           ? feedback.typo
             ? 'Dobrze, ale sprawdź pisownię'
@@ -537,13 +608,21 @@ function FeedbackPanel({
             : 'Źle – wrócimy do tej fiszki'}
       </h3>
       {(!feedback.correct || feedback.typo || question.kind === 'written') && (
-        <div>
-          <p>Poprawna odpowiedź:</p>
+        <div className="Feedback-answer">
+          <p className="Muted">Poprawna odpowiedź:</p>
           <SideContent side={question.answer} />
         </div>
       )}
-      {onOverride && <Button onClick={onOverride}>Moja odpowiedź była poprawna</Button>}{' '}
-      <Button onClick={onNext}>Dalej (Enter)</Button>
+      <div className="Row">
+        <Button variant="primary" onClick={onNext}>
+          Dalej (Enter)
+        </Button>
+        {onOverride && (
+          <Button variant="ghost" onClick={onOverride}>
+            Moja odpowiedź była poprawna
+          </Button>
+        )}
+      </div>
     </aside>
   )
 }

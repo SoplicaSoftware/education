@@ -5,6 +5,83 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="Interactive education tools and materials for engineering studies." />
     <title>Soplica Software Education Hub</title>
+    <style>
+      :root {
+        --fg: oklch(14.5% 0 0deg);
+        --bg: white;
+        --muted: oklch(43.9% 0 0deg);
+        --hover: oklch(97% 0 0deg);
+        --line: oklch(92.2% 0 0deg);
+        color-scheme: light dark;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --fg: white;
+          --bg: oklch(14.5% 0 0deg);
+          --muted: oklch(70.8% 0 0deg);
+          --hover: oklch(26.9% 0 0deg);
+          --line: oklch(26.9% 0 0deg);
+        }
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--fg);
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+      }
+      header,
+      main {
+        max-width: 42rem;
+        margin: 0 auto;
+        padding: 0 1rem;
+      }
+      header {
+        padding-top: 3rem;
+      }
+      h1 {
+        margin: 0;
+        font-size: 1.75rem;
+        line-height: 2.25rem;
+        letter-spacing: -0.01em;
+      }
+      h2 {
+        margin: 2.5rem 0 0.75rem;
+        font-size: 1rem;
+      }
+      p {
+        margin: 0 0 0.75rem;
+        color: var(--muted);
+      }
+      a {
+        color: inherit;
+      }
+      ul {
+        margin: 0 0 4rem;
+        padding: 0;
+        list-style: none;
+        border: 1px solid var(--fg);
+      }
+      li + li {
+        border-top: 1px solid var(--line);
+      }
+      li a {
+        display: block;
+        padding: 1rem;
+        text-decoration: none;
+      }
+      li a:hover {
+        background: var(--hover);
+      }
+      li strong {
+        display: block;
+      }
+      li span {
+        font-size: 0.875rem;
+        color: var(--muted);
+      }
+    </style>
   </head>
   <body>
     <header>
@@ -28,8 +105,10 @@
         <h2>Projects</h2>
         <ul>
           <li>
-            <a href="./engineering-flashcards/">Engineering flashcards</a> – flashcards and a learn mode with LaTeX and
-            image support (UI in Polish).
+            <a href="./engineering-flashcards/">
+              <strong>Engineering flashcards →</strong>
+              <span>Flashcards and a learn mode with LaTeX and image support (UI in Polish).</span>
+            </a>
           </li>
         </ul>
       </section>
