@@ -216,12 +216,6 @@
               <a href="./engineering-flashcards/" data-i18n="flashcards">Engineering flashcards →</a>
               <p data-i18n="flashcardsText">Flashcards and a learn mode with LaTeX and image support.</p>
             </li>
-            <li>
-              <a id="guide" href="./engineering-flashcards/how-to-create-flashcards.md" download data-i18n="guide"
-                >How to create flashcards with AI ↓</a
-              >
-              <p data-i18n="guideText">Paste this file into any AI chat with your notes to get a ready-to-import JSON deck.</p>
-            </li>
           </ul>
         </section>
       </main>
@@ -249,12 +243,9 @@
         projects: 'Projekty',
         flashcards: 'Fiszki inżynierskie →',
         flashcardsText: 'Fiszki i tryb nauki z obsługą LaTeX-a i zdjęć.',
-        guide: 'Jak tworzyć fiszki z AI ↓',
-        guideText: 'Wklej ten plik do dowolnego czatu AI razem z notatkami, a dostaniesz talię JSON gotową do importu.',
-        guideHref: './engineering-flashcards/jak-tworzyc-fiszki.md',
       }
       // The English text is what's in the markup; it's read once so switching back restores it.
-      const EN = { docTitle: document.title, guideHref: document.getElementById('guide').getAttribute('href') }
+      const EN = { docTitle: document.title }
       document.querySelectorAll('[data-i18n]').forEach((el) => (EN[el.dataset.i18n] = el.textContent))
       document.querySelectorAll('[data-i18n-html]').forEach((el) => (EN[el.dataset.i18nHtml] = el.innerHTML))
 
@@ -266,7 +257,6 @@
         document.title = m.docTitle
         document.querySelectorAll('[data-i18n]').forEach((el) => (el.textContent = m[el.dataset.i18n]))
         document.querySelectorAll('[data-i18n-html]').forEach((el) => (el.innerHTML = m[el.dataset.i18nHtml]))
-        document.getElementById('guide').setAttribute('href', m.guideHref)
         document.querySelectorAll('[data-lang]').forEach((b) => b.setAttribute('aria-pressed', b.dataset.lang === lang))
       }
       let saved = null
