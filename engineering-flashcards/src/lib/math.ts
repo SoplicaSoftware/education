@@ -10,6 +10,12 @@ const DELIMITERS: Array<{ open: string; close: string; display: boolean }> = [
   { open: '$', close: '$', display: false },
 ]
 
+const URL_RE = /https?:\/\/[^\s<>"]*[^\s<>".,;:!?)]/g
+
+/** Escapes plain text and turns http(s) URLs into links, e.g. sources cited on a card. */
+const plainToHtml = (s: string) =>
+  escapeHtml(s).replace(URL_RE, (url) => `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`)
+
 const cache = new Map<string, string>()
 
 /**
@@ -35,7 +41,7 @@ export function renderRichText(text: string): string {
       if (end === -1) continue
       const tex = text.slice(i + open.length, end)
       if (!tex.trim()) continue
-      html += escapeHtml(buffer)
+      html += plainToHtml(buffer)
       buffer = ''
       html += katex.renderToString(tex, { displayMode: display, throwOnError: false, strict: false, output: 'html' })
       i = end + close.length
@@ -44,7 +50,7 @@ export function renderRichText(text: string): string {
     buffer += text[i]
     i++
   }
-  html += escapeHtml(buffer)
+  html += plainToHtml(buffer)
 
   if (cache.size > 2000) cache.clear()
   cache.set(text, html)

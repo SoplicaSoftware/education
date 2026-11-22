@@ -313,7 +313,8 @@ function FlashcardView({
       tabIndex={0}
       aria-label={flipped ? 'Show question' : 'Show answer'}
       data-flipped={flipped || undefined}
-      onClick={() => {
+      onClick={(e) => {
+        if (e.target instanceof HTMLElement && e.target.closest('a')) return
         if (swiped.current) {
           swiped.current = false
           return
