@@ -1,5 +1,6 @@
 import type { Card, Choice, Deck, ExportFile, Side } from '../types'
 import { uid } from './utils'
+import { t } from './i18n'
 
 type Json = Record<string, unknown>
 
@@ -39,7 +40,7 @@ function toDeck(v: unknown, cardId?: (cardIndex: number) => string): Deck | null
   const now = Date.now()
   return {
     id: str(v.id) || uid(),
-    title: str(v.title) || 'Imported deck',
+    title: str(v.title) || t().errors.importedDeck,
     description: str(v.description),
     cards: v.cards.map((c, i) => toCard(c, cardId?.(i))).filter((c): c is Card => c !== null),
     createdAt: typeof v.createdAt === 'number' ? v.createdAt : now,
@@ -53,7 +54,7 @@ export function parseImport(text: string): Deck[] {
   try {
     data = JSON.parse(text)
   } catch {
-    throw new Error('The file is not valid JSON.')
+    throw new Error(t().errors.invalidJson)
   }
   return parseImportData(data)
 }
@@ -64,7 +65,7 @@ export function parseImportData(data: unknown, cardId?: (deckIndex: number, card
   const decks = raw
     .map((d, i) => toDeck(d, cardId && ((c) => cardId(i, c))))
     .filter((d): d is Deck => d !== null)
-  if (decks.length === 0) throw new Error('No flashcard decks found in the file.')
+  if (decks.length === 0) throw new Error(t().errors.noDecks)
   return decks
 }
 

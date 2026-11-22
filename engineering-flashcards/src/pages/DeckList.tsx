@@ -1,7 +1,7 @@
 import { Accordion } from '@base-ui/react/accordion'
 import { useRef } from 'react'
 import { EmptyState, Page, Section, Spinner, TopBar } from '../components/Layout'
-import { Button, ChevronRightIcon, DropdownMenu, PlusIcon, StarIcon, notify } from '../components/ui'
+import { Button, ChevronRightIcon, DropdownMenu, PlusIcon, Segmented, StarIcon, notify } from '../components/ui'
 import { downloadDecks, parseImport } from '../lib/io'
 import { navigate } from '../lib/router'
 import { createSampleDeck } from '../lib/sample'
@@ -10,13 +10,13 @@ import { isRepoDeck, repoDeckFile, repoDeckFolder, repoFolders } from '../lib/re
 import { useStarCounts } from '../lib/stars'
 import { formatDate, newDeck, pluralCards } from '../lib/utils'
 import type { Deck } from '../types'
-
-const AI_GUIDE = './how-to-create-flashcards.md'
+import { setLang, t, useLang, useT, type Lang } from '../lib/i18n'
 
 function downloadAiGuide() {
+  const { href, file } = t().aiGuide
   const a = document.createElement('a')
-  a.href = AI_GUIDE
-  a.download = 'how-to-create-flashcards.md'
+  a.href = href
+  a.download = file
   document.body.appendChild(a)
   a.click()
   a.remove()
@@ -24,6 +24,8 @@ function downloadAiGuide() {
 
 export function DeckList() {
   const { decks, localIds, error, saveDeck, importDecks } = useDecks()
+  const m = useT()
+  const lang = useLang()
   const fileInput = useRef<HTMLInputElement>(null)
   const repoDecks = (decks ?? []).filter((d) => isRepoDeck(d.id))
   const localDecks = (decks ?? []).filter((d) => !isRepoDeck(d.id))
@@ -36,7 +38,7 @@ export function DeckList() {
 
   const addSample = async () => {
     await saveDeck(createSampleDeck())
-    notify('Example deck added')
+    notify(m.home.exampleAdded)
   }
 
   const onImport = async (files: FileList | null) => {
@@ -47,9 +49,9 @@ export function DeckList() {
         const imported = await importDecks(parseImport(await file.text()))
         total += imported.length
       }
-      notify(total === 1 ? 'Deck imported' : `${total} decks imported`)
+      notify(m.home.imported(total))
     } catch (e) {
-      notify('Import failed', e instanceof Error ? e.message : undefined, 'error')
+      notify(m.home.importFailed, e instanceof Error ? e.message : undefined, 'error')
     } finally {
       if (fileInput.current) fileInput.current.value = ''
     }
@@ -58,20 +60,30 @@ export function DeckList() {
   return (
     <>
       <TopBar
-        title="Engineering flashcards"
-        subtitle="Flashcards with LaTeX and images"
+        title={m.appTitle}
+        subtitle={m.home.subtitle}
+        backHref={{ href: '../', label: m.common.backToHub }}
         actions={
           <>
+            <Segmented<Lang>
+              label={m.common.language}
+              value={[lang]}
+              onChange={([next]) => setLang(next)}
+              options={[
+                { value: 'en', label: 'EN' },
+                { value: 'pl', label: 'PL' },
+              ]}
+            />
             <Button variant="primary" onClick={createDeck}>
-              <PlusIcon /> New deck
+              <PlusIcon /> {m.home.newDeck}
             </Button>
             <DropdownMenu
-              label="More"
+              label={m.common.more}
               items={[
-                { label: 'Import from JSON file', onClick: () => fileInput.current?.click() },
-                ...(decks && decks.length > 0 ? [{ label: 'Export all', onClick: () => downloadDecks(decks) }] : []),
-                { label: 'Add example deck', onClick: addSample },
-                { label: 'Guide for generating flashcards with AI', onClick: downloadAiGuide, separatorBefore: true },
+                { label: m.home.importFile, onClick: () => fileInput.current?.click() },
+                ...(decks && decks.length > 0 ? [{ label: m.home.exportAll, onClick: () => downloadDecks(decks) }] : []),
+                { label: m.home.addExample, onClick: addSample },
+                { label: m.home.aiGuideMenu, onClick: downloadAiGuide, separatorBefore: true },
               ]}
             />
           </>
@@ -87,30 +99,30 @@ export function DeckList() {
       />
       <Page>
         {error ? (
-          <EmptyState title="Cannot open browser storage" description={error} />
+          <EmptyState title={m.home.storageError} description={error} />
         ) : decks === null ? (
           <Spinner />
         ) : (
           <>
             {(repoFolders.length > 0 || repoDecks.length > 0) && (
-              <Section title="Ready-to-use flashcards">
+              <Section title={m.home.ready}>
                 <ReadyDecks decks={repoDecks} localIds={localIds} />
               </Section>
             )}
             {localDecks.length > 0 ? (
-              <Section title={`Your decks (${localDecks.length})`}>
+              <Section title={m.home.yourDecks(localDecks.length)}>
                 <DeckLinks decks={localDecks} localIds={localIds} />
               </Section>
             ) : (
               <EmptyState
-                title="You have no decks of your own yet"
-                description="Create a deck with LaTeX formulas and images, or import a JSON file. Everything is saved locally in this browser."
+                title={m.home.emptyTitle}
+                description={m.home.emptyText}
               >
                 <Button variant="primary" onClick={createDeck}>
-                  <PlusIcon /> New deck
+                  <PlusIcon /> {m.home.newDeck}
                 </Button>
-                <Button onClick={() => fileInput.current?.click()}>Import JSON</Button>
-                <Button onClick={addSample}>Example deck</Button>
+                <Button onClick={() => fileInput.current?.click()}>{m.home.importJson}</Button>
+                <Button onClick={addSample}>{m.home.exampleDeck}</Button>
               </EmptyState>
             )}
           </>
@@ -118,14 +130,11 @@ export function DeckList() {
         {!error && decks !== null && (
           <section className="AiGuide">
             <div className="AiGuide-text">
-              <h2>Generate flashcards with AI</h2>
-              <p className="Muted">
-                Download the guide, paste it into any AI chat together with your notes, and import the JSON file you get
-                back.
-              </p>
+              <h2>{m.home.aiTitle}</h2>
+              <p className="Muted">{m.home.aiText}</p>
             </div>
-            <a className="Button" href={AI_GUIDE} download>
-              Download guide (.md)
+            <a className="Button" href={m.aiGuide.href} download={m.aiGuide.file}>
+              {m.home.aiDownload}
             </a>
           </section>
         )}
@@ -135,6 +144,7 @@ export function DeckList() {
 }
 
 function ReadyDecks({ decks, localIds }: { decks: Deck[]; localIds: Set<string> }) {
+  const m = useT()
   const groups = [
     ...repoFolders.map((folder) => ({ folder, decks: decks.filter((d) => repoDeckFolder(d.id) === folder) })),
     { folder: '', decks: decks.filter((d) => !repoDeckFolder(d.id)) },
@@ -148,15 +158,15 @@ function ReadyDecks({ decks, localIds }: { decks: Deck[]; localIds: Set<string> 
             <Accordion.Trigger className="Collapsible-trigger Folder-trigger">
               <ChevronRightIcon className="Collapsible-icon" />
               <FolderIcon />
-              <span className="Folder-name">{g.folder || 'Other'}</span>
-              <span className="Muted">{g.decks.length === 1 ? '1 deck' : `${g.decks.length} decks`}</span>
+              <span className="Folder-name">{g.folder || m.home.otherFolder}</span>
+              <span className="Muted">{m.decks(g.decks.length)}</span>
             </Accordion.Trigger>
           </Accordion.Header>
           <Accordion.Panel className="Collapsible-panel">
             {g.decks.length > 0 ? (
               <DeckLinks decks={g.decks} localIds={localIds} />
             ) : (
-              <p className="Folder-empty Muted">No decks here yet.</p>
+              <p className="Folder-empty Muted">{m.home.emptyFolder}</p>
             )}
           </Accordion.Panel>
         </Accordion.Item>
@@ -175,6 +185,7 @@ function FolderIcon() {
 
 function DeckLinks({ decks, localIds }: { decks: Deck[]; localIds: Set<string> }) {
   const stars = useStarCounts()
+  const m = useT()
   return (
     <ul className="List">
       {decks.map((deck) => {
@@ -185,18 +196,18 @@ function DeckLinks({ decks, localIds }: { decks: Deck[]; localIds: Set<string> }
           <li key={deck.id}>
             <a className="DeckLink" href={`#/deck/${deck.id}`}>
               <span className="DeckLink-body">
-                <span className="DeckLink-title">{deck.title || 'Untitled'}</span>
+                <span className="DeckLink-title">{deck.title || m.common.untitled}</span>
                 {deck.description && <span className="DeckLink-description">{deck.description}</span>}
                 <span className="DeckLink-meta">
                   {pluralCards(deck.cards.length)} ·{' '}
                   {repo
-                    ? `${repoDeckFile(deck.id).split('/').pop()}${localIds.has(deck.id) ? ' · edited locally' : ''}`
+                    ? `${repoDeckFile(deck.id).split('/').pop()}${localIds.has(deck.id) ? ` · ${m.home.editedLocally}` : ''}`
                     : formatDate(deck.updatedAt)}
                   {starred > 0 && (
                     <>
                       {' · '}
                       <span className="StarCount">
-                        <StarIcon /> {starred} starred
+                        <StarIcon /> {m.star.count(starred)}
                       </span>
                     </>
                   )}

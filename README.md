@@ -39,7 +39,7 @@ cd /tmp/pages && python3 -m http.server 4319
 
 ## Fiszki inżynierskie (`engineering-flashcards/`)
 
-Fiszki z obsługą wzorów LaTeX (KaTeX) i zdjęć, np. do fizyki czy materiałoznawstwa. Interfejs aplikacji jest po angielsku, treść fiszek może być w dowolnym języku.
+Fiszki z obsługą wzorów LaTeX (KaTeX) i zdjęć, np. do fizyki czy materiałoznawstwa. Interfejs aplikacji jest po angielsku i po polsku, treść fiszek może być w dowolnym języku.
 
 - **Zestawy:** tworzenie, edycja, import i eksport do JSON (zdjęcia jako base64) oraz wklejanie listy „pojęcie, separator, definicja”.
 - **Zdjęcia:** przycisk „Image” w edytorze albo wklejenie ze schowka (Ctrl+V). Duże zdjęcia są automatycznie zmniejszane.
@@ -48,7 +48,8 @@ Fiszki z obsługą wzorów LaTeX (KaTeX) i zdjęć, np. do fizyki czy materiało
 - **Gwiazdki:** fiszki trudne do zapamiętania albo ważne można oznaczyć gwiazdką – na liście fiszek w widoku zestawu, na karcie w trybie Fiszki (także klawiszem S) i w pytaniu w trybie Nauka. Filtr **Starred** w widoku zestawu i przełącznik **Only starred cards** w ustawieniach obu trybów pozwalają ćwiczyć tylko te fiszki. Gwiazdki są zapisywane w localStorage przeglądarki (klucz `ef:stars`), osobno od zestawów: nie trafiają do eksportowanego JSON-a, a oznaczenie zestawu z repozytorium nie tworzy jego lokalnej kopii.
 - **Tryb Nauka:** pytania wyboru (ABCD), prawda/fałsz i pisemne. Możesz dodać własne odpowiedzi ABCD z kilkoma poprawnymi. Fiszka jest opanowana po dwóch poprawnych odpowiedziach: najpierw rozpoznanie, potem wpisanie.
 - **Zestawy z repozytorium:** pliki JSON wrzucone do [`engineering-flashcards/decks/`](./engineering-flashcards/decks) (także do podfolderów) pojawiają się na stronie głównej w sekcji „Ready-to-use flashcards”, bez importowania. Edycja takiego zestawu zapisuje się tylko w przeglądarce, a **More → Restore repository version** usuwa lokalne zmiany.
-- **Fiszki z AI:** [`how-to-create-flashcards.md`](./engineering-flashcards/public/how-to-create-flashcards.md) to instrukcja do wklejenia w dowolny czat AI razem z notatkami. Czat odpowiada gotowym plikiem JSON do importu. Instrukcję można pobrać ze strony głównej fiszek i z huba.
+- **Język:** przełącznik EN / PL jest na górze huba i strony głównej fiszek. Wybór zapisuje się w localStorage pod kluczem `lang`, wspólnym dla huba i aplikacji. Bez zapisanego wyboru język bierze się z ustawień przeglądarki. Teksty aplikacji są w [`src/lib/messages.ts`](./engineering-flashcards/src/lib/messages.ts), a teksty huba w skrypcie na dole `index.html`.
+- **Fiszki z AI:** [`how-to-create-flashcards.md`](./engineering-flashcards/public/how-to-create-flashcards.md) (po polsku [`jak-tworzyc-fiszki.md`](./engineering-flashcards/public/jak-tworzyc-fiszki.md)) to instrukcja do wklejenia w dowolny czat AI razem z notatkami. Czat odpowiada gotowym plikiem JSON do importu. Instrukcję można pobrać ze strony głównej fiszek.
 - **Zapis lokalny:** dane trzymane są w IndexedDB przeglądarki, bo localStorage ma za mały limit na zdjęcia. Nic nie trafia na serwer. Eksport do JSON służy jako kopia zapasowa i sposób przenoszenia fiszek między urządzeniami.
 
 Plik testowy: [`engineering-flashcards/examples/test-deck.json`](./engineering-flashcards/examples/test-deck.json). Zawiera wzory LaTeX, zdjęcie PNG w base64, rysunek SVG i pytania ABCD z kilkoma poprawnymi odpowiedziami. Obok leży samo zdjęcie `pearlite.png` do testowania ręcznego dodawania zdjęć.

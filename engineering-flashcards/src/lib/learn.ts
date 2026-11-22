@@ -18,12 +18,6 @@ export const DEFAULT_SETTINGS: LearnSettings = {
   shuffle: true,
 }
 
-export const QUESTION_TYPE_LABELS: Record<QuestionType, string> = {
-  mc: 'Multiple choice',
-  tf: 'True / false',
-  written: 'Written',
-}
-
 /** 0 = new, 1 = familiar (answered right once), 2 = mastered. */
 export type Stage = 0 | 1 | 2
 

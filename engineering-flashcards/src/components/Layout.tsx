@@ -1,23 +1,40 @@
 import type { ReactNode } from 'react'
 import { navigate } from '../lib/router'
 import { ArrowLeftIcon, Button } from './ui'
+import { useT } from '../lib/i18n'
 
 export function TopBar({
   title,
   subtitle,
   back,
+  backHref,
   actions,
 }: {
   title: ReactNode
   subtitle?: ReactNode
   back?: string
+  /** A real link out of the app (e.g. to the hub), instead of a hash route. */
+  backHref?: { href: string; label: string }
   actions?: ReactNode
 }) {
+  const m = useT()
   return (
     <header className="TopBar">
       <div className="TopBar-inner">
+        {backHref && (
+          <a
+            className="Button"
+            data-variant="ghost"
+            data-size="icon"
+            href={backHref.href}
+            aria-label={backHref.label}
+            title={backHref.label}
+          >
+            <ArrowLeftIcon />
+          </a>
+        )}
         {back !== undefined && (
-          <Button size="icon" variant="ghost" aria-label="Back" onClick={() => navigate(back)}>
+          <Button size="icon" variant="ghost" aria-label={m.common.back} onClick={() => navigate(back)}>
             <ArrowLeftIcon />
           </Button>
         )}
@@ -68,9 +85,10 @@ export function EmptyState({
 }
 
 export function Spinner() {
+  const m = useT()
   return (
     <p className="Spinner" role="status">
-      Loading…
+      {m.common.loading}
     </p>
   )
 }

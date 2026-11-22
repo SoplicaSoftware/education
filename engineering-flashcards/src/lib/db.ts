@@ -1,4 +1,5 @@
 import type { Deck } from '../types'
+import { t } from './i18n'
 
 // IndexedDB instead of localStorage: base64 images quickly exceed localStorage's ~5 MB quota.
 const DB_NAME = 'engineering-flashcards'
@@ -10,7 +11,7 @@ function openDb(): Promise<IDBDatabase> {
   if (!dbPromise) {
     dbPromise = new Promise((resolve, reject) => {
       if (typeof indexedDB === 'undefined') {
-        reject(new Error('This browser does not support IndexedDB.'))
+        reject(new Error(t().errors.noIndexedDb))
         return
       }
       const request = indexedDB.open(DB_NAME, 1)
@@ -18,7 +19,7 @@ function openDb(): Promise<IDBDatabase> {
         request.result.createObjectStore(STORE, { keyPath: 'id' })
       }
       request.onsuccess = () => resolve(request.result)
-      request.onerror = () => reject(request.error ?? new Error('Could not open the database.'))
+      request.onerror = () => reject(request.error ?? new Error(t().errors.openDb))
     })
   }
   return dbPromise
@@ -32,7 +33,7 @@ function run<T>(mode: IDBTransactionMode, fn: (store: IDBObjectStore) => IDBRequ
         const request = fn(tx.objectStore(STORE))
         tx.oncomplete = () => resolve(request.result)
         tx.onerror = () => reject(tx.error ?? request.error)
-        tx.onabort = () => reject(tx.error ?? new Error('Transaction aborted.'))
+        tx.onabort = () => reject(tx.error ?? new Error(t().errors.txAborted))
       }),
   )
 }

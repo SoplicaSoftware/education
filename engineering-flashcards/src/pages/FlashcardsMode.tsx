@@ -7,6 +7,7 @@ import { navigate } from '../lib/router'
 import { useStars } from '../lib/stars'
 import { isSideEmpty, pluralCards, shuffle, studyableCards } from '../lib/utils'
 import type { Card, Deck, Side } from '../types'
+import { useT } from '../lib/i18n'
 
 interface Settings {
   shuffle: boolean
@@ -23,6 +24,7 @@ function backSide(card: Card): Side {
 
 export function FlashcardsMode({ deck, starredOnly }: { deck: Deck; starredOnly: boolean }) {
   const stars = useStars(deck.id)
+  const m = useT()
   // Fixed for the session so unstarring a card doesn't reshuffle the cards being studied.
   const [starredAtStart] = useState(() => new Set(stars.starred))
   const pool = useMemo(() => studyableCards(deck), [deck])
@@ -126,7 +128,7 @@ export function FlashcardsMode({ deck, starredOnly }: { deck: Deck; starredOnly:
   const starLearning = () => {
     const missing = [...learning].filter((id) => !stars.isStarred(id))
     missing.forEach(toggleStar)
-    notify(missing.length === 1 ? '1 card starred' : `${missing.length} cards starred`)
+    notify(m.star.added(missing.length))
   }
 
   const updateSettings = (patch: Partial<Settings>) => {
@@ -146,64 +148,64 @@ export function FlashcardsMode({ deck, starredOnly }: { deck: Deck; starredOnly:
     <>
       <TopBar
         back={`/deck/${deck.id}`}
-        title={starredOnly ? 'Flashcards · starred' : 'Flashcards'}
+        title={starredOnly ? m.flashcards.titleStarred : m.common.flashcards}
         subtitle={deck.title}
-        actions={<Button onClick={() => setSettingsOpen(true)}>Settings</Button>}
+        actions={<Button onClick={() => setSettingsOpen(true)}>{m.common.settings}</Button>}
       />
 
       {starredOnly && cards.length === 0 ? (
         <Page>
           <EmptyState
-            title="No starred cards"
-            description="Star the cards you want to focus on – in the deck view or while studying – and practise only those here."
+            title={m.common.noStarred}
+            description={m.flashcards.noStarredText}
           >
             <Button variant="primary" onClick={() => navigate(`/deck/${deck.id}/flashcards`, { replace: true })}>
-              Study all cards
+              {m.common.studyAll}
             </Button>
           </EmptyState>
         </Page>
       ) : finished ? (
         <Page>
-          <Section title="End of deck">
+          <Section title={m.flashcards.end}>
             {settings.track ? (
               <div className="Summary">
                 <div>
                   <span className="Summary-value">{known.size}</span>
-                  <span className="Summary-label">Know</span>
+                  <span className="Summary-label">{m.flashcards.know}</span>
                 </div>
                 <div>
                   <span className="Summary-value">{learning.size}</span>
-                  <span className="Summary-label">Still learning</span>
+                  <span className="Summary-label">{m.flashcards.stillLearning}</span>
                 </div>
               </div>
             ) : (
-              <p className="Lead">You went through all {order.length} cards.</p>
+              <p className="Lead">{m.flashcards.wentThrough(order.length)}</p>
             )}
             <div className="Row">
               {settings.track && learning.size > 0 && (
                 <Button variant="primary" onClick={() => restart(order.filter((id) => learning.has(id)))}>
-                  Repeat the ones you don't know ({learning.size})
+                  {m.flashcards.repeat(learning.size)}
                 </Button>
               )}
               {settings.track && [...learning].some((id) => !stars.isStarred(id)) && (
-                <Button onClick={starLearning}>Star the ones you don't know</Button>
+                <Button onClick={starLearning}>{m.flashcards.starUnknown}</Button>
               )}
-              <Button onClick={() => restart(cards.map((c) => c.id))}>Start over</Button>
-              <Button onClick={() => navigate(`/deck/${deck.id}/learn`)}>Go to learn mode</Button>
+              <Button onClick={() => restart(cards.map((c) => c.id))}>{m.flashcards.startOver}</Button>
+              <Button onClick={() => navigate(`/deck/${deck.id}/learn`)}>{m.flashcards.toLearn}</Button>
             </div>
           </Section>
         </Page>
       ) : card ? (
         <Page>
           <div className="Stack">
-            <ProgressBar value={(index / order.length) * 100} label={`Card ${index + 1} of ${order.length}`} />
+            <ProgressBar value={(index / order.length) * 100} label={m.flashcards.progress(index + 1, order.length)} />
             {settings.track && (
               <div className="Stats">
                 <span>
-                  Don't know: <strong>{learning.size}</strong>
+                  {m.flashcards.dontKnowStat} <strong>{learning.size}</strong>
                 </span>
                 <span>
-                  Know: <strong>{known.size}</strong>
+                  {m.flashcards.knowStat} <strong>{known.size}</strong>
                 </span>
               </div>
             )}
@@ -225,42 +227,35 @@ export function FlashcardsMode({ deck, starredOnly }: { deck: Deck; starredOnly:
               {settings.track ? (
                 <>
                   <Button disabled={history.length === 0} onClick={undo}>
-                    Undo
+                    {m.flashcards.undo}
                   </Button>
-                  <Button onClick={() => mark(false)}>Don't know</Button>
+                  <Button onClick={() => mark(false)}>{m.flashcards.dontKnow}</Button>
                   <Button variant="primary" onClick={() => mark(true)}>
-                    Know
+                    {m.flashcards.know}
                   </Button>
                 </>
               ) : (
                 <>
                   <Button disabled={index === 0} onClick={() => go(-1)}>
-                    Previous
+                    {m.flashcards.previous}
                   </Button>
-                  <Button onClick={() => setFlipped((f) => !f)}>Flip</Button>
+                  <Button onClick={() => setFlipped((f) => !f)}>{m.flashcards.flip}</Button>
                   <Button variant="primary" onClick={() => go(1)}>
-                    Next
+                    {m.flashcards.next}
                   </Button>
                 </>
               )}
             </nav>
-            <p className="Hint">
-              Shortcuts: space – flip, ← {settings.track ? "don't know" : 'previous'}, → {settings.track ? 'know' : 'next'}, S –
-              star. On a phone you can swipe the card.
-            </p>
+            <p className="Hint">{m.flashcards.shortcuts(settings.track)}</p>
           </div>
         </Page>
       ) : null}
 
-      <Sheet open={settingsOpen} onOpenChange={setSettingsOpen} title="Flashcard settings">
+      <Sheet open={settingsOpen} onOpenChange={setSettingsOpen} title={m.flashcards.settingsTitle}>
         <div className="SettingsForm">
           <Switch
-            label="Only starred cards"
-            description={
-              starredCount > 0
-                ? `Practise only the ${pluralCards(starredCount)} you starred`
-                : 'Star cards first to use this'
-            }
+            label={m.common.onlyStarred}
+            description={starredCount > 0 ? m.flashcards.onlyStarredText(pluralCards(starredCount)) : m.common.starFirst}
             checked={starredOnly}
             disabled={!starredOnly && starredCount === 0}
             onCheckedChange={(on) =>
@@ -268,15 +263,15 @@ export function FlashcardsMode({ deck, starredOnly }: { deck: Deck; starredOnly:
             }
           />
           <Switch
-            label="Track progress"
-            description="Mark cards as “know” / “don't know” and repeat the hard ones"
+            label={m.flashcards.track}
+            description={m.flashcards.trackText}
             checked={settings.track}
             onCheckedChange={(track) => updateSettings({ track })}
           />
-          <Switch label="Shuffle" checked={settings.shuffle} onCheckedChange={(shuffle) => updateSettings({ shuffle })} />
+          <Switch label={m.common.shuffle} checked={settings.shuffle} onCheckedChange={(shuffle) => updateSettings({ shuffle })} />
           <Switch
-            label="Start with the answer"
-            description="Show the back of the card first"
+            label={m.flashcards.startWithBack}
+            description={m.flashcards.startWithBackText}
             checked={settings.startWithBack}
             onCheckedChange={(startWithBack) => updateSettings({ startWithBack })}
           />
@@ -304,6 +299,7 @@ function FlashcardView({
   onSwipe: (dir: 'left' | 'right') => void
 }) {
   const start = useRef<{ x: number; y: number } | null>(null)
+  const m = useT()
   const swiped = useRef(false)
 
   return (
@@ -311,7 +307,7 @@ function FlashcardView({
       className="Flashcard"
       role="button"
       tabIndex={0}
-      aria-label={flipped ? 'Show question' : 'Show answer'}
+      aria-label={flipped ? m.flashcards.showQuestion : m.flashcards.showAnswer}
       data-flipped={flipped || undefined}
       onClick={() => {
         if (swiped.current) {
@@ -337,13 +333,13 @@ function FlashcardView({
       }}
     >
       <div className="Flashcard-header">
-        <h2 className="Flashcard-label">{flipped ? 'Answer' : 'Question'}</h2>
+        <h2 className="Flashcard-label">{flipped ? m.common.answer : m.common.question}</h2>
         <StarToggle starred={starred} onToggle={onStar} />
       </div>
       <div className="Flashcard-body" key={flipped ? 'back' : 'front'}>
         <SideContent side={flipped ? back : front} />
       </div>
-      <p className="Flashcard-hint">Click the card to flip it</p>
+      <p className="Flashcard-hint">{m.flashcards.clickToFlip}</p>
     </article>
   )
 }
