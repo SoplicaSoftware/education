@@ -46,32 +46,32 @@ export function createSampleDeck(): Deck {
   const now = Date.now()
   return {
     id: uid(),
-    title: 'Przykład: fizyka i materiałoznawstwo',
-    description: 'Zestaw demonstracyjny pokazujący LaTeX, zdjęcia i pytania z wieloma poprawnymi odpowiedziami.',
+    title: 'Example: physics and materials science',
+    description: 'A demo deck showing LaTeX, images and questions with several correct answers.',
     createdAt: now,
     updatedAt: now,
     cards: [
-      card('II zasada dynamiki Newtona', '$\\vec F = m\\vec a$'),
-      card('Energia kinetyczna ciała o masie $m$ i prędkości $v$', '$E_k = \\dfrac{mv^2}{2}$'),
+      card("Newton's second law", '$\\vec F = m\\vec a$'),
+      card('Kinetic energy of a body with mass $m$ and velocity $v$', '$E_k = \\dfrac{mv^2}{2}$'),
       card(
-        'Co to za mikrostruktura? (stal eutektoidalna, wolno chłodzona)',
-        'Perlit – płytkowa mieszanina ferrytu $\\alpha$ i cementytu $\\mathrm{Fe_3C}$',
-        { front: { text: 'Co to za mikrostruktura? (stal eutektoidalna, wolno chłodzona)', image: pearliteSvg() } },
+        'What microstructure is this? (eutectoid steel, slowly cooled)',
+        'Pearlite – a lamellar mixture of ferrite $\\alpha$ and cementite $\\mathrm{Fe_3C}$',
+        { front: { text: 'What microstructure is this? (eutectoid steel, slowly cooled)', image: pearliteSvg() } },
       ),
-      card('Podaj siłę zsuwającą klocek z równi pochyłej (bez tarcia).', '$F = mg\\sin\\alpha$', {
-        front: { text: 'Podaj siłę zsuwającą klocek z równi pochyłej (bez tarcia).', image: INCLINED_PLANE },
+      card('Force pulling the block down the inclined plane (no friction)', '$F = mg\\sin\\alpha$', {
+        front: { text: 'Force pulling the block down the inclined plane (no friction)', image: INCLINED_PLANE },
       }),
-      card('Zawartość węgla w punkcie eutektoidalnym układu Fe–Fe₃C', '$0{,}77\\%\\,\\mathrm{C}$ (ok. $727^\\circ\\mathrm{C}$)'),
-      card('Prawo Hooke’a (naprężenie–odkształcenie)', '$$\\sigma = E\\,\\varepsilon$$'),
-      card('Które z poniższych są fazami w układzie Fe–Fe₃C?', '', {
+      card('Carbon content at the eutectoid point of the Fe–Fe₃C system', '$0.77\\%\\,\\mathrm{C}$ (at about $727^\\circ\\mathrm{C}$)'),
+      card("Hooke's law (stress–strain)", '$$\\sigma = E\\,\\varepsilon$$'),
+      card('Which of these are phases in the Fe–Fe₃C system?', '', {
         choices: [
-          { id: uid(), text: 'Ferryt $\\alpha$', correct: true },
-          { id: uid(), text: 'Austenit $\\gamma$', correct: true },
-          { id: uid(), text: 'Cementyt $\\mathrm{Fe_3C}$', correct: true },
-          { id: uid(), text: 'Perlit', correct: false },
+          { id: uid(), text: 'Ferrite $\\alpha$', correct: true },
+          { id: uid(), text: 'Austenite $\\gamma$', correct: true },
+          { id: uid(), text: 'Cementite $\\mathrm{Fe_3C}$', correct: true },
+          { id: uid(), text: 'Pearlite', correct: false },
         ],
       }),
-      card('Równanie Bernoulliego (przepływ ustalony, nielepki)', '$$p + \\frac{\\rho v^2}{2} + \\rho g h = \\text{const}$$'),
+      card("Bernoulli's equation (steady, inviscid flow)", '$$p + \\frac{\\rho v^2}{2} + \\rho g h = \\text{const}$$'),
     ],
   }
 }

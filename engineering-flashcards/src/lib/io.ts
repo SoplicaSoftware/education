@@ -25,23 +25,23 @@ function toChoice(v: unknown): Choice | null {
   return choice
 }
 
-function toCard(v: unknown): Card | null {
+function toCard(v: unknown, fallbackId?: string): Card | null {
   if (!isObject(v)) return null
   // Also accept the simpler { term, definition } / { question, answer } shapes.
   const front = toSide(v.front ?? v.term ?? v.question)
   const back = toSide(v.back ?? v.definition ?? v.answer)
   const choices = Array.isArray(v.choices) ? v.choices.map(toChoice).filter((c): c is Choice => c !== null) : []
-  return { id: str(v.id) || uid(), front, back, choices }
+  return { id: str(v.id) || fallbackId || uid(), front, back, choices }
 }
 
-function toDeck(v: unknown): Deck | null {
+function toDeck(v: unknown, cardId?: (cardIndex: number) => string): Deck | null {
   if (!isObject(v) || !Array.isArray(v.cards)) return null
   const now = Date.now()
   return {
     id: str(v.id) || uid(),
-    title: str(v.title) || 'Zaimportowany zestaw',
+    title: str(v.title) || 'Imported deck',
     description: str(v.description),
-    cards: v.cards.map(toCard).filter((c): c is Card => c !== null),
+    cards: v.cards.map((c, i) => toCard(c, cardId?.(i))).filter((c): c is Card => c !== null),
     createdAt: typeof v.createdAt === 'number' ? v.createdAt : now,
     updatedAt: now,
   }
@@ -53,15 +53,18 @@ export function parseImport(text: string): Deck[] {
   try {
     data = JSON.parse(text)
   } catch {
-    throw new Error('Plik nie jest poprawnym JSON-em.')
+    throw new Error('The file is not valid JSON.')
   }
   return parseImportData(data)
 }
 
-export function parseImportData(data: unknown): Deck[] {
+/** `cardId` supplies ids for cards that have none, e.g. stable ones for decks bundled from the repo. */
+export function parseImportData(data: unknown, cardId?: (deckIndex: number, cardIndex: number) => string): Deck[] {
   const raw = isObject(data) && Array.isArray(data.decks) ? data.decks : Array.isArray(data) ? data : [data]
-  const decks = raw.map(toDeck).filter((d): d is Deck => d !== null)
-  if (decks.length === 0) throw new Error('Nie znaleziono żadnego zestawu fiszek w pliku.')
+  const decks = raw
+    .map((d, i) => toDeck(d, cardId && ((c) => cardId(i, c))))
+    .filter((d): d is Deck => d !== null)
+  if (decks.length === 0) throw new Error('No flashcard decks found in the file.')
   return decks
 }
 
@@ -79,7 +82,7 @@ function slugify(text: string) {
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/^-|-$/g, '')
-      .slice(0, 60) || 'fiszki'
+      .slice(0, 60) || 'flashcards'
   )
 }
 
@@ -88,7 +91,7 @@ export function downloadDecks(decks: Deck[], name?: string) {
   const url = URL.createObjectURL(blob)
   const a = document.createElement('a')
   a.href = url
-  a.download = `${slugify(name ?? (decks.length === 1 ? decks[0].title : 'wszystkie-zestawy'))}.json`
+  a.download = `${slugify(name ?? (decks.length === 1 ? decks[0].title : 'all-decks'))}.json`
   document.body.appendChild(a)
   a.click()
   a.remove()

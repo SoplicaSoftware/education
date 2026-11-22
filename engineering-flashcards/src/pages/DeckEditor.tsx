@@ -43,7 +43,7 @@ export function DeckEditor({ deck: initial }: { deck: Deck }) {
       dirty.current = false
       saveDeck(latest.current)
         .then(() => setStatus('saved'))
-        .catch(() => notify('Nie udało się zapisać', 'Możliwe, że zabrakło miejsca w pamięci przeglądarki.', 'error'))
+        .catch(() => notify('Could not save', 'The browser may have run out of storage space.', 'error'))
     }, 400)
     return () => clearTimeout(t)
   }, [deck, saveDeck])
@@ -95,31 +95,31 @@ export function DeckEditor({ deck: initial }: { deck: Deck }) {
     <>
       <TopBar
         back={`/deck/${deck.id}`}
-        title={deck.title.trim() || 'Nowy zestaw'}
-        subtitle={status === 'saving' ? 'Zapisywanie…' : 'Zapisano w przeglądarce'}
+        title={deck.title.trim() || 'New deck'}
+        subtitle={status === 'saving' ? 'Saving…' : 'Saved in your browser'}
         actions={
           <Button variant="primary" onClick={() => navigate(`/deck/${deck.id}`)}>
-            Gotowe
+            Done
           </Button>
         }
       />
       <Page>
         <div className="Stack">
-          <Field label="Tytuł zestawu">
+          <Field label="Deck title">
             <FieldControl
               className="Input"
               value={deck.title}
               onValueChange={(title) => update((d) => ({ ...d, title }))}
-              placeholder="np. Materiałoznawstwo – stale"
+              placeholder="e.g. Materials science – steels"
               autoFocus={!deck.title}
             />
           </Field>
-          <Field label="Opis">
+          <Field label="Description">
             <FieldControl
               render={<TextArea rows={2} />}
               value={deck.description}
               onValueChange={(description) => update((d) => ({ ...d, description }))}
-              placeholder="Opcjonalnie"
+              placeholder="Optional"
             />
           </Field>
           <LatexHelp />
@@ -127,7 +127,7 @@ export function DeckEditor({ deck: initial }: { deck: Deck }) {
 
         <Section
           title={pluralCards(deck.cards.length)}
-          actions={<Button onClick={() => setBulkOpen(true)}>Wklej listę fiszek</Button>}
+          actions={<Button onClick={() => setBulkOpen(true)}>Paste a list of cards</Button>}
         >
           <ol className="Stack PlainList">
             {deck.cards.map((card, index) => (
@@ -136,7 +136,7 @@ export function DeckEditor({ deck: initial }: { deck: Deck }) {
           </ol>
           <div>
             <Button variant="primary" onClick={addCard}>
-              <PlusIcon /> Dodaj fiszkę
+              <PlusIcon /> Add card
             </Button>
           </div>
         </Section>
@@ -147,7 +147,7 @@ export function DeckEditor({ deck: initial }: { deck: Deck }) {
         onOpenChange={setBulkOpen}
         onImport={(cards) => {
           update((d) => ({ ...d, cards: [...d.cards.filter((c) => !isCardEmpty(c)), ...cards] }))
-          notify(`Dodano: ${pluralCards(cards.length)}`)
+          notify(`Added ${pluralCards(cards.length)}`)
         }}
       />
     </>
@@ -171,19 +171,19 @@ const CardEditor = memo(function CardEditor({
   return (
     <li className="EditorCard">
       <div className="EditorCard-header">
-        <span className="EditorCard-title">Fiszka {index + 1}</span>
-        <Button variant="ghost" onClick={() => onRemove(card.id)} aria-label={`Usuń fiszkę ${index + 1}`}>
-          Usuń
+        <span className="EditorCard-title">Card {index + 1}</span>
+        <Button variant="ghost" onClick={() => onRemove(card.id)} aria-label={`Delete card ${index + 1}`}>
+          Delete
         </Button>
       </div>
       <div className="EditorSides">
-        <SideEditor id={`card-${card.id}-front`} label="Przód – pytanie / pojęcie" side={card.front} onChange={setSide('front')} />
+        <SideEditor id={`card-${card.id}-front`} label="Front – question / term" side={card.front} onChange={setSide('front')} />
         <SideEditor
           id={`card-${card.id}-back`}
-          label="Tył – odpowiedź / definicja"
+          label="Back – answer / definition"
           side={card.back}
           onChange={setSide('back')}
-          placeholder={card.choices.some((c) => c.correct) ? 'Opcjonalnie – poprawne odpowiedzi ABCD wystarczą' : undefined}
+          placeholder={card.choices.some((c) => c.correct) ? 'Optional – the correct ABCD choices are enough' : undefined}
         />
       </div>
       <ChoicesEditor choices={card.choices} onChange={setChoices} />
@@ -196,7 +196,7 @@ function ImageButton({ onImage, label }: { onImage: (dataUrl: string) => void; l
   return (
     <>
       <Button variant="ghost" onClick={() => input.current?.click()} aria-label={label}>
-        <PlusIcon /> Zdjęcie
+        <PlusIcon /> Image
       </Button>
       <input
         ref={input}
@@ -210,7 +210,7 @@ function ImageButton({ onImage, label }: { onImage: (dataUrl: string) => void; l
           try {
             onImage(await imageFileToDataUrl(file))
           } catch (err) {
-            notify('Nie udało się dodać zdjęcia', err instanceof Error ? err.message : undefined, 'error')
+            notify('Could not add the image', err instanceof Error ? err.message : undefined, 'error')
           }
         }}
       />
@@ -222,7 +222,7 @@ function ImagePreview({ src, onRemove }: { src: string; onRemove: () => void }) 
   return (
     <figure className="ImagePreview">
       <img src={src} alt="" />
-      <Button variant="ghost" size="icon" onClick={onRemove} aria-label="Usuń zdjęcie">
+      <Button variant="ghost" size="icon" onClick={onRemove} aria-label="Remove image">
         <CloseIcon />
       </Button>
     </figure>
@@ -252,13 +252,13 @@ function SideEditor({
     <div className="Field">
       <div className="Field-label">
         <label htmlFor={id}>{label}</label>
-        <ImageButton onImage={setImage} label={`Dodaj zdjęcie: ${label}`} />
+        <ImageButton onImage={setImage} label={`Add image: ${label}`} />
       </div>
       <TextArea
         id={id}
         value={side.text}
         rows={3}
-        placeholder={placeholder ?? 'Tekst, wzory: $E = mc^2$'}
+        placeholder={placeholder ?? 'Text, formulas: $E = mc^2$'}
         onChange={(e) => onChange({ ...side, text: e.target.value })}
         onPaste={async (e) => {
           const file = imageFromClipboard(e)
@@ -267,14 +267,14 @@ function SideEditor({
           try {
             setImage(await imageFileToDataUrl(file))
           } catch (err) {
-            notify('Nie udało się wkleić zdjęcia', err instanceof Error ? err.message : undefined, 'error')
+            notify('Could not paste the image', err instanceof Error ? err.message : undefined, 'error')
           }
         }}
       />
       {side.image && <ImagePreview src={side.image} onRemove={() => setImage(undefined)} />}
       {hasMath(side.text) && (
         <div className="Preview">
-          <span className="Hint">Podgląd</span>
+          <span className="Hint">Preview</span>
           <RichText text={side.text} />
         </div>
       )}
@@ -291,14 +291,14 @@ function ChoicesEditor({ choices, onChange }: { choices: Choice[]; onChange: (fn
     <Collapsible.Root className="Collapsible-box" open={open} onOpenChange={setOpen}>
       <Collapsible.Trigger className="Collapsible-trigger">
         <ChevronRightIcon className="Collapsible-icon" />
-        Własne odpowiedzi ABCD
-        <span className="Muted">{choices.length > 0 ? `(${choices.length})` : '– opcjonalnie'}</span>
+        Custom ABCD choices
+        <span className="Muted">{choices.length > 0 ? `(${choices.length})` : '– optional'}</span>
       </Collapsible.Trigger>
       <Collapsible.Panel className="Collapsible-panel">
         <div className="Collapsible-content">
           <p className="Muted">
-            Zaznacz wszystkie poprawne odpowiedzi – może być ich kilka. Bez własnych odpowiedzi tryb nauki losuje błędne
-            odpowiedzi z innych fiszek.
+            Tick every correct choice – there can be more than one. Without custom choices, learn mode picks wrong answers
+            from other cards.
           </p>
           <ul className="ChoiceList">
             {choices.map((choice, i) => (
@@ -306,18 +306,18 @@ function ChoicesEditor({ choices, onChange }: { choices: Choice[]; onChange: (fn
                 <Checkbox
                   checked={choice.correct}
                   onCheckedChange={(correct) => updateChoice(choice.id, { correct })}
-                  aria-label={`Odpowiedź ${letter(i)} jest poprawna`}
+                  aria-label={`Choice ${letter(i)} is correct`}
                 />
                 <TextInput
                   value={choice.text}
                   onValueChange={(text) => updateChoice(choice.id, { text })}
-                  placeholder={`Odpowiedź ${letter(i)}`}
+                  placeholder={`Choice ${letter(i)}`}
                 />
-                <ImageButton label={`Dodaj zdjęcie do odpowiedzi ${letter(i)}`} onImage={(image) => updateChoice(choice.id, { image })} />
+                <ImageButton label={`Add image to choice ${letter(i)}`} onImage={(image) => updateChoice(choice.id, { image })} />
                 <Button
                   variant="ghost"
                   size="icon"
-                  aria-label={`Usuń odpowiedź ${letter(i)}`}
+                  aria-label={`Remove choice ${letter(i)}`}
                   onClick={() => onChange((list) => list.filter((c) => c.id !== choice.id))}
                 >
                   <CloseIcon />
@@ -337,7 +337,7 @@ function ChoicesEditor({ choices, onChange }: { choices: Choice[]; onChange: (fn
           </ul>
           <div>
             <Button onClick={() => onChange((list) => [...list, { id: uid(), text: '', correct: list.length === 0 }])}>
-              <PlusIcon /> Dodaj odpowiedź
+              <PlusIcon /> Add choice
             </Button>
           </div>
         </div>
@@ -351,20 +351,20 @@ function LatexHelp() {
     <Collapsible.Root className="Collapsible-box">
       <Collapsible.Trigger className="Collapsible-trigger">
         <ChevronRightIcon className="Collapsible-icon" />
-        Jak wpisywać wzory i zdjęcia?
+        How to add formulas and images
       </Collapsible.Trigger>
       <Collapsible.Panel className="Collapsible-panel">
         <ul className="Collapsible-content HelpList">
           <li>
-            Wzór w tekście: <code>$\sigma = E\varepsilon$</code>
+            Inline formula: <code>$\sigma = E\varepsilon$</code>
           </li>
           <li>
-            Wzór w osobnej linii: <code>$$\int_0^l F\,dx$$</code>
+            Formula on its own line: <code>$$\int_0^l F\,dx$$</code>
           </li>
           <li>
-            Znak dolara bez wzoru: <code>\$</code>
+            Dollar sign without a formula: <code>\$</code>
           </li>
-          <li>Zdjęcie dodasz przyciskiem „Dodaj zdjęcie” albo wklejając je (Ctrl+V) do pola tekstowego.</li>
+          <li>Add an image with the “Image” button or by pasting it (Ctrl+V) into a text field.</li>
         </ul>
       </Collapsible.Panel>
     </Collapsible.Root>
@@ -372,9 +372,9 @@ function LatexHelp() {
 }
 
 const SEPARATORS = [
-  { value: 'tab', label: 'Tabulator', sep: '\t' },
-  { value: 'semicolon', label: 'Średnik ;', sep: ';' },
-  { value: 'dash', label: 'Myślnik -', sep: ' - ' },
+  { value: 'tab', label: 'Tab', sep: '\t' },
+  { value: 'semicolon', label: 'Semicolon ;', sep: ';' },
+  { value: 'dash', label: 'Dash -', sep: ' - ' },
 ] as const
 type SeparatorKey = (typeof SEPARATORS)[number]['value']
 
@@ -396,8 +396,8 @@ function BulkImportSheet({
     <Sheet
       open={open}
       onOpenChange={onOpenChange}
-      title="Wklej listę fiszek"
-      description="Jedna fiszka w linii: pojęcie, separator, definicja – np. skopiowane z arkusza kalkulacyjnego."
+      title="Paste a list of cards"
+      description="One card per line: term, separator, definition – e.g. copied from a spreadsheet."
       size="lg"
       footer={
         <Button
@@ -409,7 +409,7 @@ function BulkImportSheet({
             onOpenChange(false)
           }}
         >
-          Dodaj {cards.length > 0 ? pluralCards(cards.length) : 'fiszki'}
+          Add {cards.length > 0 ? pluralCards(cards.length) : 'cards'}
         </Button>
       }
     >
@@ -423,8 +423,8 @@ function BulkImportSheet({
         value={text}
         onChange={(e) => setText(e.target.value)}
         rows={8}
-        aria-label="Lista fiszek"
-        placeholder={`Ferryt${separator}roztwór stały węgla w Fe α\nModuł Younga${separator}$E = \\sigma/\\varepsilon$`}
+        aria-label="List of cards"
+        placeholder={`Ferrite${separator}solid solution of carbon in α-Fe\nYoung's modulus${separator}$E = \\sigma/\\varepsilon$`}
       />
     </Sheet>
   )

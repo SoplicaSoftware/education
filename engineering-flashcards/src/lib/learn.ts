@@ -19,9 +19,9 @@ export const DEFAULT_SETTINGS: LearnSettings = {
 }
 
 export const QUESTION_TYPE_LABELS: Record<QuestionType, string> = {
-  mc: 'Wybór (ABCD)',
-  tf: 'Prawda / fałsz',
-  written: 'Pisemne',
+  mc: 'Multiple choice',
+  tf: 'True / false',
+  written: 'Written',
 }
 
 /** 0 = new, 1 = familiar (answered right once), 2 = mastered. */

@@ -19,13 +19,13 @@ export default function App() {
   if (!deck) {
     return (
       <>
-        <TopBar back="/" title="Nie znaleziono" />
+        <TopBar back="/" title="Not found" />
         <Page>
           <EmptyState
-            title="Ten zestaw nie istnieje"
-            description="Mógł zostać usunięty albo został utworzony w innej przeglądarce. Zestawy są zapisywane tylko lokalnie."
+            title="This deck does not exist"
+            description="It may have been deleted or created in another browser. Decks are only saved locally."
           >
-            <Button onClick={() => navigate('/')}>Wróć do listy</Button>
+            <Button onClick={() => navigate('/')}>Back to all decks</Button>
           </EmptyState>
         </Page>
       </>
@@ -36,9 +36,9 @@ export default function App() {
     case 'edit':
       return <DeckEditor key={deck.id} deck={deck} />
     case 'flashcards':
-      return <FlashcardsMode key={deck.id} deck={deck} />
+      return <FlashcardsMode key={`${deck.id}/${route[3]}`} deck={deck} starredOnly={route[3] === 'starred'} />
     case 'learn':
-      return <LearnMode key={deck.id} deck={deck} />
+      return <LearnMode key={`${deck.id}/${route[3]}`} deck={deck} starredOnly={route[3] === 'starred'} />
     default:
       return <DeckView deck={deck} />
   }

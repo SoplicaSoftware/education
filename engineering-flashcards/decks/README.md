@@ -1,11 +1,11 @@
-# Zestawy z repozytorium
+# Repository decks
 
-Każdy plik `.json` w tym folderze (także w podfolderach) pojawia się na stronie głównej fiszek w sekcji „Z repozytorium”. Nie trzeba go importować.
+Every `.json` file in this folder (including subfolders) shows up on the flashcards home page in the “Ready-to-use flashcards” section. No import needed.
 
-1. W aplikacji otwórz zestaw i wybierz **Więcej → Eksportuj do JSON** albo przygotuj plik ręcznie (format opisany w głównym README).
-2. Wrzuć plik tutaj, np. `decks/materialoznawstwo.json` albo `decks/semestr-3/fizyka.json`.
-3. Zrób commit i push na `main`. Po wdrożeniu zestaw będzie widoczny na stronie.
+1. In the app, open a deck and choose **More → Export to JSON**, or write the file by hand (the format is described in the main README).
+2. Put the file here, e.g. `decks/materials-science.json` or `decks/semester-3/physics.json`.
+3. Commit and push to `main`. After deployment the deck appears on the site.
 
-Lokalnie (`npm run dev`) nowe pliki pojawiają się po odświeżeniu strony.
+Locally (`npm run dev`) new files appear after reloading the page.
 
-Adres zestawu zależy od nazwy pliku, więc nie zmieniaj jej bez potrzeby. Edycja takiego zestawu w aplikacji zapisuje się tylko w przeglądarce. **Więcej → Przywróć wersję z repozytorium** usuwa lokalne zmiany.
+The deck's address depends on the file name, so don't rename it without a reason. Editing such a deck in the app is saved only in your browser. **More → Restore repository version** removes the local changes.

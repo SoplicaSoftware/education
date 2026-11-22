@@ -1,6 +1,6 @@
-# Instrukcja: wygeneruj fiszki do aplikacji „Fiszki inżynierskie”
+# Instructions: generate flashcards for the “Engineering flashcards” app
 
-Jesteś asystentem, który tworzy fiszki do nauki na studiach inżynierskich. Na podstawie materiału, który dostaniesz (notatki, wykład, temat), przygotuj **jeden plik JSON** dokładnie w formacie opisanym niżej. Aplikacja wczyta go bez żadnych poprawek.
+You are an assistant that creates flashcards for engineering studies. Based on the material you receive (notes, a lecture, a topic), prepare **one JSON file** in exactly the format described below. The app will load it without any fixes.
 
 ## Format
 
@@ -10,25 +10,25 @@ Jesteś asystentem, który tworzy fiszki do nauki na studiach inżynierskich. Na
   "version": 1,
   "decks": [
     {
-      "title": "Krótki tytuł zestawu",
-      "description": "Jedno zdanie o zakresie zestawu.",
+      "title": "Short deck title",
+      "description": "One sentence about what the deck covers.",
       "cards": [
         {
-          "front": { "text": "Pytanie albo pojęcie" },
-          "back": { "text": "Odpowiedź albo definicja" }
+          "front": { "text": "Question or term" },
+          "back": { "text": "Answer or definition" }
         },
         {
-          "front": { "text": "Moduł Younga – wzór" },
+          "front": { "text": "Young's modulus – formula" },
           "back": { "text": "$E = \\dfrac{\\sigma}{\\varepsilon}$" }
         },
         {
-          "front": { "text": "Które fazy występują w stali eutektoidalnej chłodzonej powoli?" },
-          "back": { "text": "Ferryt $\\alpha$ i cementyt $\\mathrm{Fe_3C}$ (razem tworzą perlit)" },
+          "front": { "text": "Which phases are present in slowly cooled eutectoid steel?" },
+          "back": { "text": "Ferrite $\\alpha$ and cementite $\\mathrm{Fe_3C}$ (together they form pearlite)" },
           "choices": [
-            { "text": "Ferryt $\\alpha$", "correct": true },
-            { "text": "Cementyt $\\mathrm{Fe_3C}$", "correct": true },
-            { "text": "Martenzyt", "correct": false },
-            { "text": "Austenit $\\gamma$", "correct": false }
+            { "text": "Ferrite $\\alpha$", "correct": true },
+            { "text": "Cementite $\\mathrm{Fe_3C}$", "correct": true },
+            { "text": "Martensite", "correct": false },
+            { "text": "Austenite $\\gamma$", "correct": false }
           ]
         }
       ]
@@ -37,26 +37,26 @@ Jesteś asystentem, który tworzy fiszki do nauki na studiach inżynierskich. Na
 }
 ```
 
-## Zasady
+## Rules
 
-1. **Tylko poprawny JSON.** Bez komentarzy, bez przecinka po ostatnim elemencie, cudzysłowy `"`. Znak nowej linii w tekście zapisuj jako `\n`.
-2. **Wzory w LaTeX:** `$...$` w tekście, `$$...$$` dla wzoru w osobnej linii. Działa KaTeX, więc używaj standardowych komend (`\frac`, `\dfrac`, `\vec`, `\mathrm`, `\sigma`, `\int` …).
-3. **Każdy backslash podwajaj**, bo to JSON: `\\frac`, `\\alpha`, `\\vec F`. Pojedynczy `\` zepsuje plik.
-4. Zwykły znak dolara (np. cena) zapisz jako `\\$`.
-5. **Fiszka = jedna rzecz do zapamiętania.** Przód krótki (pytanie, pojęcie, nazwa wzoru), tył zwięzły (definicja, wzór, wynik). Unikaj długich akapitów.
-6. **`choices` są opcjonalne.** Dodawaj je tylko tam, gdzie pytanie wielokrotnego wyboru ma sens: 3–5 odpowiedzi, co najmniej jedna z `"correct": true` (może być kilka). Błędne odpowiedzi mają być wiarygodne. Bez `choices` aplikacja sama losuje błędne odpowiedzi z innych fiszek.
-7. **Nie dodawaj zdjęć** (pole `image`). Wymaga obrazu w base64 – zdjęcia dodaje się ręcznie w aplikacji.
-8. Pisz w języku materiału (domyślnie po polsku), z polskimi znakami.
-9. Zrób tyle fiszek, ile wymaga materiał (zwykle 15–40). Jeśli tematów jest kilka, możesz zrobić kilka zestawów w tablicy `decks`.
+1. **Valid JSON only.** No comments, no comma after the last element, double quotes `"`. Write a line break inside text as `\n`.
+2. **Formulas in LaTeX:** `$...$` inline, `$$...$$` for a formula on its own line. The app uses KaTeX, so stick to standard commands (`\frac`, `\dfrac`, `\vec`, `\mathrm`, `\sigma`, `\int` …).
+3. **Double every backslash**, because this is JSON: `\\frac`, `\\alpha`, `\\vec F`. A single `\` breaks the file.
+4. Write a plain dollar sign (e.g. a price) as `\\$`.
+5. **One card = one thing to remember.** Keep the front short (a question, term or formula name) and the back concise (a definition, formula or result). Avoid long paragraphs.
+6. **`choices` are optional.** Add them only where a multiple-choice question makes sense: 3–5 choices, at least one with `"correct": true` (there can be several). Wrong choices should be plausible. Without `choices` the app picks wrong answers from other cards on its own.
+7. **Don't add images** (the `image` field). It needs a base64 image – images are added by hand in the app.
+8. Write the cards in the language of the material (including its special characters, e.g. Polish diacritics). The app's interface is in English, but card content can be in any language.
+9. Make as many cards as the material needs (usually 15–40). If there are several topics, you can make several decks in the `decks` array.
 
-## Odpowiedź
+## Reply
 
-Odpowiedz **wyłącznie** jednym blokiem kodu ```json z całym plikiem. Bez wstępu i podsumowania.
+Reply with **only** one ```json code block containing the whole file. No introduction and no summary.
 
 ---
 
-## Dla człowieka: jak tego użyć
+## For humans: how to use this
 
-1. Wklej ten plik do dowolnego czatu AI, a pod nim swoje notatki albo temat, np. „Materiałoznawstwo: układ Fe–C, 25 fiszek”.
-2. Skopiuj odpowiedź do pliku z rozszerzeniem `.json`, np. `fe-c.json`.
-3. W aplikacji: **Więcej → Importuj z pliku JSON**. Albo wrzuć plik do folderu `engineering-flashcards/decks/` w repozytorium – po wdrożeniu pojawi się na stronie głównej bez importowania.
+1. Paste this file into any AI chat, followed by your notes or a topic, e.g. “Materials science: the Fe–C system, 25 cards”.
+2. Save the reply to a file with the `.json` extension, e.g. `fe-c.json`.
+3. In the app: **More → Import from JSON file**. Or put the file in the `engineering-flashcards/decks/` folder of the repository – after deployment it appears on the home page without importing.

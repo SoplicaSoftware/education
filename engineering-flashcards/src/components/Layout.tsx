@@ -17,7 +17,7 @@ export function TopBar({
     <header className="TopBar">
       <div className="TopBar-inner">
         {back !== undefined && (
-          <Button size="icon" variant="ghost" aria-label="Wstecz" onClick={() => navigate(back)}>
+          <Button size="icon" variant="ghost" aria-label="Back" onClick={() => navigate(back)}>
             <ArrowLeftIcon />
           </Button>
         )}
@@ -70,7 +70,7 @@ export function EmptyState({
 export function Spinner() {
   return (
     <p className="Spinner" role="status">
-      Wczytywanie…
+      Loading…
     </p>
   )
 }

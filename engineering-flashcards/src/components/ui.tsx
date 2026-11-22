@@ -172,7 +172,7 @@ export function Sheet({
           </div>
           {children}
           <div className="Popup-actions">
-            <Dialog.Close render={<Button />}>Zamknij</Dialog.Close>
+            <Dialog.Close render={<Button />}>Close</Dialog.Close>
             {footer}
           </div>
         </Dialog.Popup>
@@ -206,7 +206,7 @@ export function ConfirmDialog({
             <AlertDialog.Description className="Popup-description">{description}</AlertDialog.Description>
           </div>
           <div className="Popup-actions">
-            <AlertDialog.Close render={<Button />}>Anuluj</AlertDialog.Close>
+            <AlertDialog.Close render={<Button />}>Cancel</AlertDialog.Close>
             <Button
               variant="danger"
               onClick={() => {
@@ -280,7 +280,7 @@ function ToastList() {
           <Toast.Title className="Toast-title" />
           <Toast.Description className="Toast-description" />
         </div>
-        <Toast.Close render={<Button size="icon" variant="ghost" />} aria-label="Zamknij">
+        <Toast.Close render={<Button size="icon" variant="ghost" />} aria-label="Close">
           <CloseIcon />
         </Toast.Close>
       </Toast.Content>
@@ -298,6 +298,29 @@ export function Toaster({ children }: { children: ReactNode }) {
         </Toast.Viewport>
       </Toast.Portal>
     </Toast.Provider>
+  )
+}
+
+export function StarToggle({
+  starred,
+  onToggle,
+  label = 'Star this card',
+}: {
+  starred: boolean
+  onToggle: () => void
+  label?: string
+}) {
+  return (
+    <Toggle
+      className="Star"
+      pressed={starred}
+      onPressedChange={onToggle}
+      aria-label={label}
+      title={starred ? 'Starred – click to remove' : 'Star to focus on this card'}
+      onClick={(e) => e.stopPropagation()}
+    >
+      <StarIcon />
+    </Toggle>
   )
 }
 
@@ -347,6 +370,14 @@ export function CloseIcon() {
   return (
     <svg {...iconProps}>
       <path d="m2.5 2.5 7 7m0-7-7 7" />
+    </svg>
+  )
+}
+
+export function StarIcon() {
+  return (
+    <svg width={16} height={16} viewBox="0 0 16 16" aria-hidden stroke="currentColor" strokeWidth={1.25} strokeLinejoin="round">
+      <path d="M8 1.75l1.9 3.95 4.35.6-3.17 3.03.78 4.32L8 11.58l-3.86 2.07.78-4.32L1.75 6.3l4.35-.6z" />
     </svg>
   )
 }
