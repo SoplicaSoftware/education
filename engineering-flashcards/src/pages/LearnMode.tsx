@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Button as BaseButton } from '@base-ui/react/button'
-import { Page, Section, TopBar } from '../components/Layout'
+import { EmptyState, Page, Section, TopBar } from '../components/Layout'
 import { SideContent } from '../components/RichContent'
 import {
   Button,
@@ -11,6 +11,7 @@ import {
   ProgressBar,
   Segmented,
   Sheet,
+  StarToggle,
   Switch,
 } from '../components/ui'
 import {
@@ -26,7 +27,8 @@ import {
 } from '../lib/learn'
 import { usePref } from '../lib/prefs'
 import { navigate } from '../lib/router'
-import { shuffle, studyableCards } from '../lib/utils'
+import { useStars } from '../lib/stars'
+import { pluralCards, shuffle, studyableCards } from '../lib/utils'
 import type { Deck } from '../types'
 
 type Phase = 'setup' | 'question' | 'feedback' | 'summary' | 'done'
@@ -55,8 +57,15 @@ function nextRound(order: string[], stages: Record<string, Stage>, attempted: Se
   return [...open.filter((id) => attempted.has(id)), ...open.filter((id) => !attempted.has(id))].slice(0, size)
 }
 
-export function LearnMode({ deck }: { deck: Deck }) {
-  const cards = useMemo(() => studyableCards(deck), [deck])
+export function LearnMode({ deck, starredOnly }: { deck: Deck; starredOnly: boolean }) {
+  const stars = useStars(deck.id)
+  const [starredAtStart] = useState(() => new Set(stars.starred))
+  const pool = useMemo(() => studyableCards(deck), [deck])
+  const cards = useMemo(
+    () => pool.filter((c) => !starredOnly || starredAtStart.has(c.id)),
+    [pool, starredOnly, starredAtStart],
+  )
+  const starredCount = pool.filter((c) => stars.isStarred(c.id)).length
   const byId = useMemo(() => new Map(cards.map((c) => [c.id, c])), [cards])
   const [settings, setSettings] = usePref<LearnSettings>('learn', DEFAULT_SETTINGS)
   const [settingsOpen, setSettingsOpen] = useState(false)
@@ -69,11 +78,11 @@ export function LearnMode({ deck }: { deck: Deck }) {
     (s: Session) => {
       const card = byId.get(s.round[s.pos])
       if (!card) return
-      setQuestion(buildQuestion(card, s.stages[card.id] ?? 0, cards, settings))
+      setQuestion(buildQuestion(card, s.stages[card.id] ?? 0, pool, settings))
       setFeedback(null)
       setPhase('question')
     },
-    [byId, cards, settings],
+    [byId, pool, settings],
   )
 
   const start = useCallback(
@@ -93,12 +102,12 @@ export function LearnMode({ deck }: { deck: Deck }) {
       setSession(s)
       const card = byId.get(s.round[0])
       if (card) {
-        setQuestion(buildQuestion(card, 0, cards, opts))
+        setQuestion(buildQuestion(card, 0, pool, opts))
         setFeedback(null)
         setPhase('question')
       }
     },
-    [byId, cards, settings],
+    [byId, cards, pool, settings],
   )
 
   const answer = (correct: boolean, extra: Partial<Feedback> = {}) => {
@@ -190,38 +199,57 @@ export function LearnMode({ deck }: { deck: Deck }) {
     <>
       <TopBar
         back={`/deck/${deck.id}`}
-        title="Nauka"
+        title={starredOnly ? 'Learn · starred' : 'Learn'}
         subtitle={deck.title}
-        actions={phase !== 'setup' && <Button onClick={() => setSettingsOpen(true)}>Ustawienia</Button>}
+        actions={phase !== 'setup' && <Button onClick={() => setSettingsOpen(true)}>Settings</Button>}
       />
 
-      {phase === 'setup' ? (
+      {starredOnly && cards.length === 0 ? (
         <Page>
-          <Section title="Ustaw sesję nauki">
+          <EmptyState
+            title="No starred cards"
+            description="Star the cards you want to focus on – in the deck view or while studying – and learn only those here."
+          >
+            <Button variant="primary" onClick={() => navigate(`/deck/${deck.id}/learn`, { replace: true })}>
+              Study all cards
+            </Button>
+          </EmptyState>
+        </Page>
+      ) : phase === 'setup' ? (
+        <Page>
+          <Section title="Set up your session">
             <p className="Muted">
-              Fiszka jest opanowana, gdy odpowiesz na nią poprawnie dwa razy – najpierw rozpoznając odpowiedź, potem
-              wpisując ją samodzielnie.
+              A card is mastered once you answer it correctly twice – first by recognising the answer, then by typing it
+              yourself.
             </p>
           </Section>
-          <LearnSettingsForm settings={settings} onChange={setSettings} />
+          <LearnSettingsForm
+            settings={settings}
+            onChange={setSettings}
+            deckId={deck.id}
+            starredOnly={starredOnly}
+            starredCount={starredCount}
+          />
           <div>
             <Button variant="primary" size="lg" onClick={() => start()}>
-              Zacznij naukę
+              Start learning
             </Button>
           </div>
         </Page>
       ) : phase === 'done' ? (
         <Page>
           <LearnProgress counts={counts} total={cards.length} />
-          <Section title="Cały zestaw opanowany">
+          <Section title={starredOnly ? 'All starred cards mastered' : 'Whole deck mastered'}>
             <p className="Lead">
-              Wszystkie fiszki ({cards.length}) zaliczone w rundach: {session?.roundNumber}.
+              All {pluralCards(cards.length)} mastered in {session?.roundNumber === 1 ? '1 round' : `${session?.roundNumber} rounds`}.
             </p>
             <div className="Row">
               <Button variant="primary" onClick={() => start()}>
-                Ucz się od nowa
+                Learn again
               </Button>
-              <Button onClick={() => navigate(`/deck/${deck.id}/flashcards`)}>Powtórz na fiszkach</Button>
+              <Button onClick={() => navigate(`/deck/${deck.id}/flashcards${starredOnly ? '/starred' : ''}`)}>
+                Review with flashcards
+              </Button>
             </div>
           </Section>
         </Page>
@@ -229,15 +257,15 @@ export function LearnMode({ deck }: { deck: Deck }) {
         <Page>
           <LearnProgress counts={counts} total={cards.length} />
           <Section
-            title={`Koniec rundy ${session.roundNumber}`}
+            title={`End of round ${session.roundNumber}`}
             actions={
               <Button variant="primary" onClick={continueRound}>
-                Następna runda
+                Next round
               </Button>
             }
           >
             <p className="Lead">
-              Poprawnie: {session.results.filter((r) => r.correct).length} z {session.results.length}.
+              Correct: {session.results.filter((r) => r.correct).length} of {session.results.length}.
             </p>
             <ol className="Results">
               {session.results.map((r, i) => {
@@ -249,13 +277,16 @@ export function LearnMode({ deck }: { deck: Deck }) {
                       className="Mark"
                       data-correct={r.correct || undefined}
                       data-wrong={!r.correct || undefined}
-                      aria-label={r.correct ? 'Dobrze' : 'Źle'}
+                      aria-label={r.correct ? 'Correct' : 'Wrong'}
                     >
                       {r.correct ? '✓' : '✕'}
                     </span>
                     <SideContent side={card.front} />
                     <div className="CardRow-back">
                       <SideContent side={card.back} />
+                    </div>
+                    <div className="Results-star">
+                      <StarToggle starred={stars.isStarred(card.id)} onToggle={() => stars.toggle(card.id)} />
                     </div>
                   </li>
                 )
@@ -270,6 +301,8 @@ export function LearnMode({ deck }: { deck: Deck }) {
             key={`${question.card.id}-${session?.roundNumber}-${session?.pos}`}
             question={question}
             feedback={feedback}
+            starred={stars.isStarred(question.card.id)}
+            onStar={() => stars.toggle(question.card.id)}
             onAnswer={answer}
           />
           {phase === 'feedback' && feedback && (
@@ -286,51 +319,76 @@ export function LearnMode({ deck }: { deck: Deck }) {
       <Sheet
         open={settingsOpen}
         onOpenChange={setSettingsOpen}
-        title="Ustawienia nauki"
-        description="Zmiana ustawień rozpoczyna sesję od nowa."
+        title="Learn settings"
+        description="Changing the settings restarts the session."
       >
-        <LearnSettingsForm settings={settings} onChange={applySettings} />
+        <LearnSettingsForm
+          settings={settings}
+          onChange={applySettings}
+          deckId={deck.id}
+          starredOnly={starredOnly}
+          starredCount={starredCount}
+        />
       </Sheet>
     </>
   )
 }
 
-function LearnSettingsForm({ settings, onChange }: { settings: LearnSettings; onChange: (s: LearnSettings) => void }) {
+function LearnSettingsForm({
+  settings,
+  onChange,
+  deckId,
+  starredOnly,
+  starredCount,
+}: {
+  settings: LearnSettings
+  onChange: (s: LearnSettings) => void
+  deckId: string
+  starredOnly: boolean
+  starredCount: number
+}) {
   return (
     <div className="SettingsForm">
-      <Fieldset legend="Typy pytań">
+      <Switch
+        label="Only starred cards"
+        description={starredCount > 0 ? `Learn only the ${pluralCards(starredCount)} you starred` : 'Star cards first to use this'}
+        checked={starredOnly}
+        disabled={!starredOnly && starredCount === 0}
+        onCheckedChange={(on) => navigate(`/deck/${deckId}/learn${on ? '/starred' : ''}`, { replace: true })}
+      />
+      <Fieldset legend="Question types">
         <Segmented<QuestionType>
-          label="Typy pytań"
+          label="Question types"
           multiple
           value={settings.types}
           onChange={(types) => onChange({ ...settings, types })}
           options={(['mc', 'tf', 'written'] as const).map((t) => ({ value: t, label: QUESTION_TYPE_LABELS[t] }))}
         />
       </Fieldset>
-      <Fieldset legend="Odpowiadaj za pomocą">
+      <Fieldset legend="Answer with">
         <Segmented<AnswerWith>
-          label="Odpowiadaj za pomocą"
+          label="Answer with"
           value={[settings.answerWith]}
           onChange={([answerWith]) => onChange({ ...settings, answerWith })}
           options={[
-            { value: 'back', label: 'Tyłu' },
-            { value: 'front', label: 'Przodu' },
-            { value: 'both', label: 'Obu' },
+            { value: 'back', label: 'Back' },
+            { value: 'front', label: 'Front' },
+            { value: 'both', label: 'Both' },
           ]}
         />
         <p className="Hint">
-          „Tyłu” – widzisz pytanie, podajesz odpowiedź. Fiszki z własnymi odpowiedziami ABCD zawsze pytają o tył.
+          “Back” – you see the question and give the answer. Cards with their own ABCD choices always ask for the back.
         </p>
       </Fieldset>
-      <Fieldset legend="Fiszek w rundzie">
+      <Fieldset legend="Cards per round">
         <Segmented<string>
-          label="Fiszek w rundzie"
+          label="Cards per round"
           value={[String(settings.roundSize)]}
           onChange={([v]) => onChange({ ...settings, roundSize: Number(v) })}
           options={['5', '7', '10', '20'].map((v) => ({ value: v, label: v }))}
         />
       </Fieldset>
-      <Switch label="Losowa kolejność" checked={settings.shuffle} onCheckedChange={(shuffle) => onChange({ ...settings, shuffle })} />
+      <Switch label="Shuffle" checked={settings.shuffle} onCheckedChange={(shuffle) => onChange({ ...settings, shuffle })} />
     </div>
   )
 }
@@ -338,16 +396,16 @@ function LearnSettingsForm({ settings, onChange }: { settings: LearnSettings; on
 function LearnProgress({ counts, total }: { counts: { new: number; learning: number; mastered: number }; total: number }) {
   return (
     <div className="Stack">
-      <ProgressBar value={(counts.mastered / Math.max(1, total)) * 100} label="Opanowane" />
+      <ProgressBar value={(counts.mastered / Math.max(1, total)) * 100} label="Mastered" />
       <div className="Stats">
         <span>
-          Nowe: <strong>{counts.new}</strong>
+          New: <strong>{counts.new}</strong>
         </span>
         <span>
-          W trakcie: <strong>{counts.learning}</strong>
+          Learning: <strong>{counts.learning}</strong>
         </span>
         <span>
-          Opanowane: <strong>{counts.mastered}</strong>
+          Mastered: <strong>{counts.mastered}</strong>
         </span>
       </div>
     </div>
@@ -357,15 +415,22 @@ function LearnProgress({ counts, total }: { counts: { new: number; learning: num
 function QuestionView({
   question,
   feedback,
+  starred,
+  onStar,
   onAnswer,
 }: {
   question: Question
   feedback: Feedback | null
+  starred: boolean
+  onStar: () => void
   onAnswer: (correct: boolean, extra?: Partial<Feedback>) => void
 }) {
   return (
     <section className="Question">
-      <h2 className="Flashcard-label">{question.prompt === question.card.front ? 'Pytanie' : 'Odpowiedź'}</h2>
+      <div className="Flashcard-header">
+        <h2 className="Flashcard-label">{question.prompt === question.card.front ? 'Question' : 'Answer'}</h2>
+        <StarToggle starred={starred} onToggle={onStar} />
+      </div>
       <div className="Question-prompt">
         <SideContent side={question.prompt} />
       </div>
@@ -420,7 +485,7 @@ function MultipleChoice({
 
   return (
     <div className="Stack">
-      <p className="Muted">{question.multi ? 'Zaznacz wszystkie poprawne odpowiedzi:' : 'Wybierz poprawną odpowiedź:'}</p>
+      <p className="Muted">{question.multi ? 'Select all correct answers:' : 'Choose the correct answer:'}</p>
       <ol className="Options">
         {question.options.map((o, i) => {
           const picked = (feedback?.selected ?? selected).includes(o.id)
@@ -448,9 +513,9 @@ function MultipleChoice({
                 </span>
                 {result && (
                   <span className="Option-result">
-                    {result === 'correct' && '✓ poprawna'}
-                    {result === 'missed' && '✓ pominięta'}
-                    {result === 'wrong' && '✕ błędna'}
+                    {result === 'correct' && '✓ correct'}
+                    {result === 'missed' && '✓ missed'}
+                    {result === 'wrong' && '✕ wrong'}
                   </span>
                 )}
               </BaseButton>
@@ -461,11 +526,11 @@ function MultipleChoice({
       {question.multi && !answered && (
         <div>
           <Button variant="primary" disabled={selected.length === 0} onClick={() => submit(selected)}>
-            Sprawdź
+            Check
           </Button>
         </div>
       )}
-      {!answered && <p className="Hint">Możesz też wybierać klawiszami 1–{question.options.length}.</p>}
+      {!answered && <p className="Hint">You can also use the keys 1–{question.options.length}.</p>}
     </div>
   )
 }
@@ -482,19 +547,19 @@ function TrueFalse({
   const answered = feedback !== null
   return (
     <div className="Stack">
-      <p className="Muted">Czy to poprawna odpowiedź?</p>
+      <p className="Muted">Is this the correct answer?</p>
       <blockquote className="Candidate">
         <SideContent side={question.candidate} />
       </blockquote>
       <div className="TwoButtons">
         <Button disabled={answered} onClick={() => onAnswer(question.isTrue, { selected: ['true'] })}>
-          Prawda
+          True
         </Button>
         <Button disabled={answered} onClick={() => onAnswer(!question.isTrue, { selected: ['false'] })}>
-          Fałsz
+          False
         </Button>
       </div>
-      {answered && <p className="Muted">To {question.isTrue ? 'prawda' : 'fałsz'}.</p>}
+      {answered && <p className="Muted">It's {question.isTrue ? 'true' : 'false'}.</p>}
     </div>
   )
 }
@@ -520,7 +585,7 @@ function Written({
         onAnswer(result !== 'wrong', { given: value, typo: result === 'typo' })
       }}
     >
-      <Field label="Wpisz odpowiedź">
+      <Field label="Type the answer">
         <FieldControl
           className="Input"
           value={value}
@@ -535,10 +600,10 @@ function Written({
       {!answered && (
         <div className="Row">
           <Button variant="primary" type="submit" disabled={!value.trim()}>
-            Sprawdź
+            Check
           </Button>
           <Button type="button" variant="ghost" onClick={() => onAnswer(false, { given: '' })}>
-            Nie wiem
+            I don't know
           </Button>
         </div>
       )}
@@ -560,10 +625,10 @@ function SelfCheck({
   if (!revealed) {
     return (
       <div className="Stack">
-        <p className="Muted">Przypomnij sobie odpowiedź, a potem ją odkryj.</p>
+        <p className="Muted">Recall the answer, then reveal it.</p>
         <div>
           <Button variant="primary" onClick={() => setRevealed(true)}>
-            Pokaż odpowiedź
+            Show answer
           </Button>
         </div>
       </div>
@@ -574,11 +639,11 @@ function SelfCheck({
       <blockquote className="Candidate">
         <SideContent side={question.answer} />
       </blockquote>
-      <p className="Muted">Czy znałeś odpowiedź?</p>
+      <p className="Muted">Did you know the answer?</p>
       <div className="TwoButtons">
-        <Button onClick={() => onAnswer(false)}>Nie</Button>
+        <Button onClick={() => onAnswer(false)}>No</Button>
         <Button variant="primary" onClick={() => onAnswer(true)}>
-          Tak
+          Yes
         </Button>
       </div>
     </div>
@@ -601,25 +666,25 @@ function FeedbackPanel({
       <h3 className="Feedback-title">
         {feedback.correct
           ? feedback.typo
-            ? 'Dobrze, ale sprawdź pisownię'
-            : 'Dobrze!'
+            ? 'Correct, but check the spelling'
+            : 'Correct!'
           : feedback.given === ''
-            ? 'Wrócimy do tej fiszki'
-            : 'Źle – wrócimy do tej fiszki'}
+            ? "We'll come back to this card"
+            : "Wrong – we'll come back to this card"}
       </h3>
       {(!feedback.correct || feedback.typo || question.kind === 'written') && (
         <div className="Feedback-answer">
-          <p className="Muted">Poprawna odpowiedź:</p>
+          <p className="Muted">Correct answer:</p>
           <SideContent side={question.answer} />
         </div>
       )}
       <div className="Row">
         <Button variant="primary" onClick={onNext}>
-          Dalej (Enter)
+          Next (Enter)
         </Button>
         {onOverride && (
           <Button variant="ghost" onClick={onOverride}>
-            Moja odpowiedź była poprawna
+            My answer was correct
           </Button>
         )}
       </div>
