@@ -7,7 +7,7 @@ Interaktywne narzędzia i materiały do nauki na studiach inżynierskich, publik
 | Strona główna huba (`index.html`) | `https://<login>.github.io/education/` |
 | [Fiszki inżynierskie](./engineering-flashcards) | `https://<login>.github.io/education/engineering-flashcards/` |
 
-Wszystko jest celowo **bez stylów**: surowy HTML i nieostylowane komponenty [Base UI](https://base-ui.com). Jedyne wyjątki to style inline, które zachowują nowe linie w tekście fiszek i nie pozwalają zdjęciom wychodzić poza ekran. Dodatkowo podpięty jest CSS z KaTeX, bez którego wzory nie renderują się poprawnie.
+Wygląd jest wzorowany na przykładach z dokumentacji [Base UI](https://base-ui.com): neutralne kolory, cienkie ramki, ostre rogi i automatyczny tryb ciemny. Komponenty interaktywne (przyciski, menu, okna dialogowe, przełączniki, pasek postępu, powiadomienia itd.) to komponenty Base UI ostylowane jednym plikiem CSS: `engineering-flashcards/src/styles.css`.
 
 ## Automatyczne wdrażanie
 
@@ -17,7 +17,9 @@ Przy każdym pushu na `main` workflow `.github/workflows/deploy.yml` uruchamia `
 - każdy folder z samym `index.html` jest kopiowany bez zmian,
 - główny `index.html` jest stroną huba.
 
-**Jednorazowa konfiguracja:** w repozytorium na GitHubie wejdź w *Settings → Pages → Build and deployment → Source* i wybierz **GitHub Actions**.
+**Jednorazowa konfiguracja:** w repozytorium na GitHubie wejdź w *Settings → Pages → Build and deployment → Source* i wybierz **GitHub Actions**. Bez tego krok `deploy` kończy się błędem, bo strona Pages nie istnieje.
+
+Po zmianie zależności w `package.json` zawsze uruchom `npm install` i zacommituj zaktualizowany `package-lock.json`. Workflow używa `npm ci`, które przerywa build, gdy lockfile nie zgadza się z `package.json`.
 
 ### Podgląd całej strony lokalnie
 
