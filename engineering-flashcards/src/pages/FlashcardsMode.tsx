@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { Page, TopBar } from '../components/Layout'
+import { Page, Section, TopBar } from '../components/Layout'
 import { SideContent } from '../components/RichContent'
 import { Button, ProgressBar, Sheet, Switch } from '../components/ui'
 import { usePref } from '../lib/prefs'
@@ -135,33 +135,47 @@ export function FlashcardsMode({ deck }: { deck: Deck }) {
 
       {finished ? (
         <Page>
-          <h2>Koniec zestawu</h2>
-          {settings.track ? (
-            <dl>
-              <dt>Umiesz</dt>
-              <dd>{known.size}</dd>
-              <dt>Jeszcze się uczysz</dt>
-              <dd>{learning.size}</dd>
-            </dl>
-          ) : (
-            <p>Przejrzałeś wszystkie fiszki: {order.length}.</p>
-          )}
-          {settings.track && learning.size > 0 && (
-            <Button onClick={() => restart(order.filter((id) => learning.has(id)))}>
-              Powtórz te, których nie umiesz ({learning.size})
-            </Button>
-          )}{' '}
-          <Button onClick={() => restart(cards.map((c) => c.id))}>Zacznij od nowa</Button>{' '}
-          <Button onClick={() => navigate(`/deck/${deck.id}/learn`)}>Przejdź do trybu nauki</Button>
+          <Section title="Koniec zestawu">
+            {settings.track ? (
+              <div className="Summary">
+                <div>
+                  <span className="Summary-value">{known.size}</span>
+                  <span className="Summary-label">Umiesz</span>
+                </div>
+                <div>
+                  <span className="Summary-value">{learning.size}</span>
+                  <span className="Summary-label">Jeszcze się uczysz</span>
+                </div>
+              </div>
+            ) : (
+              <p className="Lead">Przejrzałeś wszystkie fiszki: {order.length}.</p>
+            )}
+            <div className="Row">
+              {settings.track && learning.size > 0 && (
+                <Button variant="primary" onClick={() => restart(order.filter((id) => learning.has(id)))}>
+                  Powtórz te, których nie umiesz ({learning.size})
+                </Button>
+              )}
+              <Button onClick={() => restart(cards.map((c) => c.id))}>Zacznij od nowa</Button>
+              <Button onClick={() => navigate(`/deck/${deck.id}/learn`)}>Przejdź do trybu nauki</Button>
+            </div>
+          </Section>
         </Page>
       ) : card ? (
         <Page>
-          <ProgressBar value={(index / order.length) * 100} label={`Fiszka ${index + 1} z ${order.length}`} />
-          {settings.track && (
-            <p>
-              Nie umiem: {learning.size} · Umiem: {known.size}
-            </p>
-          )}
+          <div className="Stack">
+            <ProgressBar value={(index / order.length) * 100} label={`Fiszka ${index + 1} z ${order.length}`} />
+            {settings.track && (
+              <div className="Stats">
+                <span>
+                  Nie umiem: <strong>{learning.size}</strong>
+                </span>
+                <span>
+                  Umiem: <strong>{known.size}</strong>
+                </span>
+              </div>
+            )}
+          </div>
 
           <FlashcardView
             key={card.id}
@@ -172,48 +186,54 @@ export function FlashcardsMode({ deck }: { deck: Deck }) {
             onSwipe={(dir) => (settings.track ? mark(dir === 'right') : go(dir === 'right' ? 1 : -1))}
           />
 
-          <nav>
-            {settings.track ? (
-              <>
-                <Button disabled={history.length === 0} onClick={undo}>
-                  Cofnij
-                </Button>{' '}
-                <Button onClick={() => mark(false)}>Nie umiem</Button>{' '}
-                <Button onClick={() => mark(true)}>Umiem</Button>
-              </>
-            ) : (
-              <>
-                <Button disabled={index === 0} onClick={() => go(-1)}>
-                  Poprzednia
-                </Button>{' '}
-                <Button onClick={() => setFlipped((f) => !f)}>Odwróć</Button>{' '}
-                <Button onClick={() => go(1)}>Następna</Button>
-              </>
-            )}
-          </nav>
-          <p>
-            <small>
+          <div className="Stack">
+            <nav className="Controls">
+              {settings.track ? (
+                <>
+                  <Button disabled={history.length === 0} onClick={undo}>
+                    Cofnij
+                  </Button>
+                  <Button onClick={() => mark(false)}>Nie umiem</Button>
+                  <Button variant="primary" onClick={() => mark(true)}>
+                    Umiem
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Button disabled={index === 0} onClick={() => go(-1)}>
+                    Poprzednia
+                  </Button>
+                  <Button onClick={() => setFlipped((f) => !f)}>Odwróć</Button>
+                  <Button variant="primary" onClick={() => go(1)}>
+                    Następna
+                  </Button>
+                </>
+              )}
+            </nav>
+            <p className="Hint">
               Skróty: spacja – odwróć, ← {settings.track ? 'nie umiem' : 'poprzednia'}, → {settings.track ? 'umiem' : 'następna'}.
               Na telefonie możesz przesuwać kartę palcem.
-            </small>
-          </p>
+            </p>
+          </div>
         </Page>
       ) : null}
 
       <Sheet open={settingsOpen} onOpenChange={setSettingsOpen} title="Ustawienia fiszek">
-        <Switch
-          label="Śledź postęp"
-          description="Oznaczaj fiszki jako „umiem” / „nie umiem” i powtarzaj trudne"
-          checked={settings.track}
-          onCheckedChange={(track) => updateSettings({ track })}
-        />
-        <Switch label="Losowa kolejność" checked={settings.shuffle} onCheckedChange={(shuffle) => updateSettings({ shuffle })} />
-        <Switch
-          label="Zaczynaj od odpowiedzi"
-          description="Pokazuj najpierw tył fiszki"
-          checked={settings.startWithBack}
-          onCheckedChange={(startWithBack) => updateSettings({ startWithBack })}
-        />
+        <div className="SettingsForm">
+          <Switch
+            label="Śledź postęp"
+            description="Oznaczaj fiszki jako „umiem” / „nie umiem” i powtarzaj trudne"
+            checked={settings.track}
+            onCheckedChange={(track) => updateSettings({ track })}
+          />
+          <Switch label="Losowa kolejność" checked={settings.shuffle} onCheckedChange={(shuffle) => updateSettings({ shuffle })} />
+          <Switch
+            label="Zaczynaj od odpowiedzi"
+            description="Pokazuj najpierw tył fiszki"
+            checked={settings.startWithBack}
+            onCheckedChange={(startWithBack) => updateSettings({ startWithBack })}
+          />
+        </div>
       </Sheet>
     </>
   )
@@ -237,6 +257,7 @@ function FlashcardView({
 
   return (
     <article
+      className="Flashcard"
       role="button"
       tabIndex={0}
       aria-label={flipped ? 'Pokaż pytanie' : 'Pokaż odpowiedź'}
@@ -264,11 +285,11 @@ function FlashcardView({
         }
       }}
     >
-      <h2>{flipped ? 'Odpowiedź' : 'Pytanie'}</h2>
-      <SideContent side={flipped ? back : front} />
-      <p>
-        <small>Kliknij kartę, aby ją odwrócić.</small>
-      </p>
+      <h2 className="Flashcard-label">{flipped ? 'Odpowiedź' : 'Pytanie'}</h2>
+      <div className="Flashcard-body" key={flipped ? 'back' : 'front'}>
+        <SideContent side={flipped ? back : front} />
+      </div>
+      <p className="Flashcard-hint">Kliknij kartę, aby ją odwrócić</p>
     </article>
   )
 }

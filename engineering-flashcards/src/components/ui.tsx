@@ -1,9 +1,11 @@
 /* eslint-disable react/only-export-components */
-// Thin wrappers around unstyled Base UI components. No styling on purpose.
+// Thin wrappers around Base UI components, styled in src/styles.css.
 import { AlertDialog } from '@base-ui/react/alert-dialog'
 import { Button as BaseButton } from '@base-ui/react/button'
 import { Checkbox as BaseCheckbox } from '@base-ui/react/checkbox'
 import { Dialog } from '@base-ui/react/dialog'
+import { Field as BaseField } from '@base-ui/react/field'
+import { Fieldset as BaseFieldset } from '@base-ui/react/fieldset'
 import { Input } from '@base-ui/react/input'
 import { Menu } from '@base-ui/react/menu'
 import { Progress } from '@base-ui/react/progress'
@@ -11,39 +13,100 @@ import { Switch as BaseSwitch } from '@base-ui/react/switch'
 import { Toast } from '@base-ui/react/toast'
 import { Toggle } from '@base-ui/react/toggle'
 import { ToggleGroup } from '@base-ui/react/toggle-group'
-import type { ComponentProps, ReactNode } from 'react'
+import { Fragment, useId, type ComponentProps, type ReactNode } from 'react'
+import { cx } from '../lib/utils'
 
-export const Button = BaseButton
-export const TextInput = Input
+type ButtonVariant = 'default' | 'primary' | 'ghost' | 'danger'
+type ButtonSize = 'md' | 'lg' | 'icon'
 
-export function TextArea(props: ComponentProps<'textarea'>) {
-  return <textarea {...props} />
+export function Button({
+  variant = 'default',
+  size = 'md',
+  className,
+  ...props
+}: Omit<ComponentProps<typeof BaseButton>, 'className'> & {
+  variant?: ButtonVariant
+  size?: ButtonSize
+  className?: string
+}) {
+  return (
+    <BaseButton
+      className={cx('Button', className)}
+      data-variant={variant === 'default' ? undefined : variant}
+      data-size={size === 'md' ? undefined : size}
+      {...props}
+    />
+  )
+}
+
+export function TextInput({ className, ...props }: Omit<ComponentProps<typeof Input>, 'className'> & { className?: string }) {
+  return <Input className={cx('Input', className)} {...props} />
+}
+
+export function TextArea({ className, ...props }: ComponentProps<'textarea'>) {
+  return <textarea className={cx('TextArea', className)} {...props} />
+}
+
+/** Base UI Field: label, control and description wired together for accessibility. */
+export function Field({
+  label,
+  description,
+  aside,
+  children,
+}: {
+  label: ReactNode
+  description?: ReactNode
+  aside?: ReactNode
+  children: ReactNode
+}) {
+  return (
+    <BaseField.Root className="Field">
+      <div className="Field-label">
+        <BaseField.Label>{label}</BaseField.Label>
+        {aside}
+      </div>
+      {children}
+      {description && <BaseField.Description className="Field-description">{description}</BaseField.Description>}
+    </BaseField.Root>
+  )
+}
+
+export const FieldControl = BaseField.Control
+
+export function Fieldset({ legend, children }: { legend: ReactNode; children: ReactNode }) {
+  return (
+    <BaseFieldset.Root className="Fieldset">
+      <BaseFieldset.Legend className="Fieldset-legend">{legend}</BaseFieldset.Legend>
+      {children}
+    </BaseFieldset.Root>
+  )
 }
 
 export function Switch({
   label,
   description,
-  checked,
   ...props
 }: ComponentProps<typeof BaseSwitch.Root> & { label: ReactNode; description?: ReactNode }) {
+  const id = useId()
   return (
-    <div>
-      <label>
-        <BaseSwitch.Root checked={checked} {...props}>
-          <BaseSwitch.Thumb />
-          {checked ? 'Wł.' : 'Wył.'}
-        </BaseSwitch.Root>{' '}
-        {label}
-      </label>
-      {description && <p>{description}</p>}
+    <div className="SwitchField">
+      <div className="SwitchField-text">
+        <label htmlFor={id}>{label}</label>
+        {description && <span className="Muted">{description}</span>}
+      </div>
+      <BaseSwitch.Root id={id} className="Switch" {...props}>
+        <BaseSwitch.Thumb className="Switch-thumb" />
+      </BaseSwitch.Root>
     </div>
   )
 }
 
-export function Checkbox({ checked, ...props }: ComponentProps<typeof BaseCheckbox.Root>) {
+export function Checkbox(props: ComponentProps<typeof BaseCheckbox.Root>) {
   return (
-    <BaseCheckbox.Root checked={checked} {...props}>
-      {checked ? '☑' : '☐'}
+    <BaseCheckbox.Root className="Checkbox" {...props}>
+      <BaseCheckbox.Indicator className="Checkbox-indicator">
+        <CheckIcon />
+      </BaseCheckbox.Indicator>
     </BaseCheckbox.Root>
   )
 }
@@ -63,6 +126,7 @@ export function Segmented<T extends string>({
 }) {
   return (
     <ToggleGroup
+      className="ToggleGroup"
       aria-label={label}
       multiple={multiple}
       value={value}
@@ -71,8 +135,8 @@ export function Segmented<T extends string>({
       }}
     >
       {options.map((o) => (
-        <Toggle key={o.value} value={o.value}>
-          {value.includes(o.value) ? '● ' : '○ '}
+        <Toggle key={o.value} value={o.value} className="Toggle">
+          {multiple && value.includes(o.value) && <CheckIcon />}
           {o.label}
         </Toggle>
       ))}
@@ -87,6 +151,7 @@ export function Sheet({
   description,
   children,
   footer,
+  size,
 }: {
   open: boolean
   onOpenChange: (open: boolean) => void
@@ -94,18 +159,21 @@ export function Sheet({
   description?: ReactNode
   children: ReactNode
   footer?: ReactNode
+  size?: 'lg'
 }) {
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <Dialog.Portal>
-        <Dialog.Backdrop />
-        <Dialog.Popup>
-          <Dialog.Title>{title}</Dialog.Title>
-          {description && <Dialog.Description>{description}</Dialog.Description>}
+        <Dialog.Backdrop className="Backdrop" />
+        <Dialog.Popup className="Popup" data-size={size}>
+          <div className="Popup-intro">
+            <Dialog.Title className="Popup-title">{title}</Dialog.Title>
+            {description && <Dialog.Description className="Popup-description">{description}</Dialog.Description>}
+          </div>
           {children}
-          <div>
+          <div className="Popup-actions">
+            <Dialog.Close render={<Button />}>Zamknij</Dialog.Close>
             {footer}
-            <Dialog.Close>Zamknij</Dialog.Close>
           </div>
         </Dialog.Popup>
       </Dialog.Portal>
@@ -131,13 +199,16 @@ export function ConfirmDialog({
   return (
     <AlertDialog.Root open={open} onOpenChange={onOpenChange}>
       <AlertDialog.Portal>
-        <AlertDialog.Backdrop />
-        <AlertDialog.Popup>
-          <AlertDialog.Title>{title}</AlertDialog.Title>
-          <AlertDialog.Description>{description}</AlertDialog.Description>
-          <div>
-            <AlertDialog.Close>Anuluj</AlertDialog.Close>
+        <AlertDialog.Backdrop className="Backdrop" />
+        <AlertDialog.Popup className="Popup">
+          <div className="Popup-intro">
+            <AlertDialog.Title className="Popup-title">{title}</AlertDialog.Title>
+            <AlertDialog.Description className="Popup-description">{description}</AlertDialog.Description>
+          </div>
+          <div className="Popup-actions">
+            <AlertDialog.Close render={<Button />}>Anuluj</AlertDialog.Close>
             <Button
+              variant="danger"
               onClick={() => {
                 onConfirm()
                 onOpenChange(false)
@@ -157,18 +228,23 @@ export function DropdownMenu({
   items,
 }: {
   label: string
-  items: Array<{ label: string; onClick: () => void }>
+  items: Array<{ label: string; onClick: () => void; danger?: boolean; separatorBefore?: boolean }>
 }) {
   return (
     <Menu.Root>
-      <Menu.Trigger>{label}</Menu.Trigger>
+      <Menu.Trigger render={<Button />}>
+        {label} <ChevronDownIcon />
+      </Menu.Trigger>
       <Menu.Portal>
-        <Menu.Positioner sideOffset={4} align="end">
-          <Menu.Popup>
+        <Menu.Positioner sideOffset={6} align="end" style={{ zIndex: 50 }}>
+          <Menu.Popup className="Menu-popup">
             {items.map((item) => (
-              <Menu.Item key={item.label} onClick={item.onClick}>
-                {item.label}
-              </Menu.Item>
+              <Fragment key={item.label}>
+                {item.separatorBefore && <Menu.Separator className="Menu-separator" />}
+                <Menu.Item className="Menu-item" data-danger={item.danger || undefined} onClick={item.onClick}>
+                  {item.label}
+                </Menu.Item>
+              </Fragment>
             ))}
           </Menu.Popup>
         </Menu.Positioner>
@@ -177,12 +253,13 @@ export function DropdownMenu({
   )
 }
 
-export function ProgressBar({ value, label }: { value: number; label: string }) {
+export function ProgressBar({ value, label }: { value: number; label: ReactNode }) {
   return (
-    <Progress.Root value={Math.round(value)}>
-      <Progress.Label>{label}</Progress.Label> <Progress.Value />
-      <Progress.Track>
-        <Progress.Indicator />
+    <Progress.Root className="Progress" value={Math.round(value)}>
+      <Progress.Label className="Progress-label">{label}</Progress.Label>
+      <Progress.Value className="Progress-value" />
+      <Progress.Track className="Progress-track">
+        <Progress.Indicator className="Progress-indicator" />
       </Progress.Track>
     </Progress.Root>
   )
@@ -197,11 +274,15 @@ export function notify(title: string, description?: string, type: 'success' | 'e
 function ToastList() {
   const { toasts } = Toast.useToastManager()
   return toasts.map((toast) => (
-    <Toast.Root key={toast.id} toast={toast}>
-      <Toast.Content>
-        <Toast.Title />
-        <Toast.Description />
-        <Toast.Close>Zamknij</Toast.Close>
+    <Toast.Root key={toast.id} toast={toast} className="Toast" data-type={toast.type}>
+      <Toast.Content className="Toast-content">
+        <div className="Toast-text">
+          <Toast.Title className="Toast-title" />
+          <Toast.Description className="Toast-description" />
+        </div>
+        <Toast.Close render={<Button size="icon" variant="ghost" />} aria-label="Zamknij">
+          <CloseIcon />
+        </Toast.Close>
       </Toast.Content>
     </Toast.Root>
   ))
@@ -212,10 +293,68 @@ export function Toaster({ children }: { children: ReactNode }) {
     <Toast.Provider toastManager={toastManager} timeout={3500} limit={3}>
       {children}
       <Toast.Portal>
-        <Toast.Viewport>
+        <Toast.Viewport className="Toast-viewport">
           <ToastList />
         </Toast.Viewport>
       </Toast.Portal>
     </Toast.Provider>
+  )
+}
+
+const iconProps = {
+  width: 12,
+  height: 12,
+  viewBox: '0 0 12 12',
+  fill: 'none',
+  stroke: 'currentColor',
+  strokeWidth: 1.5,
+  'aria-hidden': true,
+} as const
+
+export function CheckIcon() {
+  return (
+    <svg {...iconProps} width={10} height={10} viewBox="0 0 10 10">
+      <path d="M1.5 5.5 4 8l4.5-6" strokeLinecap="square" />
+    </svg>
+  )
+}
+
+export function ChevronDownIcon() {
+  return (
+    <svg {...iconProps}>
+      <path d="M2.5 4.5 6 8l3.5-3.5" />
+    </svg>
+  )
+}
+
+export function ChevronRightIcon({ className }: { className?: string }) {
+  return (
+    <svg {...iconProps} className={className}>
+      <path d="M4.5 2.5 8 6 4.5 9.5" />
+    </svg>
+  )
+}
+
+export function ArrowLeftIcon() {
+  return (
+    <svg {...iconProps} width={14} height={14} viewBox="0 0 14 14">
+      <path d="M12 7H2.5M6.5 3 2.5 7l4 4" />
+    </svg>
+  )
+}
+
+export function CloseIcon() {
+  return (
+    <svg {...iconProps}>
+      <path d="m2.5 2.5 7 7m0-7-7 7" />
+    </svg>
+  )
+}
+
+export function PlusIcon() {
+  return (
+    <svg {...iconProps}>
+      <path d="M6 1.5v9M1.5 6h9" />
+    </svg>
   )
 }
