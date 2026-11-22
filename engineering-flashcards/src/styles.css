@@ -919,6 +919,12 @@ img {
   overflow-wrap: anywhere;
 }
 
+.RichText a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
 .RichText .katex-display {
   margin: 0.5rem 0;
   overflow-x: auto;
