@@ -7,10 +7,12 @@ import { DeckList } from './pages/DeckList'
 import { DeckView } from './pages/DeckView'
 import { FlashcardsMode } from './pages/FlashcardsMode'
 import { LearnMode } from './pages/LearnMode'
+import { useT } from './lib/i18n'
 
 export default function App() {
   const route = useRoute()
   const { decks } = useDecks()
+  const m = useT()
 
   if (route[0] !== 'deck' || !route[1]) return <DeckList />
   if (decks === null) return <Spinner />
@@ -19,13 +21,13 @@ export default function App() {
   if (!deck) {
     return (
       <>
-        <TopBar back="/" title="Not found" />
+        <TopBar back="/" title={m.notFound.title} />
         <Page>
           <EmptyState
-            title="This deck does not exist"
-            description="It may have been deleted or created in another browser. Decks are only saved locally."
+            title={m.notFound.heading}
+            description={m.notFound.text}
           >
-            <Button onClick={() => navigate('/')}>Back to all decks</Button>
+            <Button onClick={() => navigate('/')}>{m.notFound.back}</Button>
           </EmptyState>
         </Page>
       </>

@@ -16,7 +16,6 @@ import {
 } from '../components/ui'
 import {
   DEFAULT_SETTINGS,
-  QUESTION_TYPE_LABELS,
   buildQuestion,
   checkWritten,
   type AnswerWith,
@@ -30,6 +29,7 @@ import { navigate } from '../lib/router'
 import { useStars } from '../lib/stars'
 import { pluralCards, shuffle, studyableCards } from '../lib/utils'
 import type { Deck } from '../types'
+import { useT } from '../lib/i18n'
 
 type Phase = 'setup' | 'question' | 'feedback' | 'summary' | 'done'
 
@@ -59,6 +59,7 @@ function nextRound(order: string[], stages: Record<string, Stage>, attempted: Se
 
 export function LearnMode({ deck, starredOnly }: { deck: Deck; starredOnly: boolean }) {
   const stars = useStars(deck.id)
+  const m = useT()
   const [starredAtStart] = useState(() => new Set(stars.starred))
   const pool = useMemo(() => studyableCards(deck), [deck])
   const cards = useMemo(
@@ -199,29 +200,26 @@ export function LearnMode({ deck, starredOnly }: { deck: Deck; starredOnly: bool
     <>
       <TopBar
         back={`/deck/${deck.id}`}
-        title={starredOnly ? 'Learn · starred' : 'Learn'}
+        title={starredOnly ? m.learn.titleStarred : m.common.learn}
         subtitle={deck.title}
-        actions={phase !== 'setup' && <Button onClick={() => setSettingsOpen(true)}>Settings</Button>}
+        actions={phase !== 'setup' && <Button onClick={() => setSettingsOpen(true)}>{m.common.settings}</Button>}
       />
 
       {starredOnly && cards.length === 0 ? (
         <Page>
           <EmptyState
-            title="No starred cards"
-            description="Star the cards you want to focus on – in the deck view or while studying – and learn only those here."
+            title={m.common.noStarred}
+            description={m.learn.noStarredText}
           >
             <Button variant="primary" onClick={() => navigate(`/deck/${deck.id}/learn`, { replace: true })}>
-              Study all cards
+              {m.common.studyAll}
             </Button>
           </EmptyState>
         </Page>
       ) : phase === 'setup' ? (
         <Page>
-          <Section title="Set up your session">
-            <p className="Muted">
-              A card is mastered once you answer it correctly twice – first by recognising the answer, then by typing it
-              yourself.
-            </p>
+          <Section title={m.learn.setup}>
+            <p className="Muted">{m.learn.setupText}</p>
           </Section>
           <LearnSettingsForm
             settings={settings}
@@ -232,23 +230,23 @@ export function LearnMode({ deck, starredOnly }: { deck: Deck; starredOnly: bool
           />
           <div>
             <Button variant="primary" size="lg" onClick={() => start()}>
-              Start learning
+              {m.learn.start}
             </Button>
           </div>
         </Page>
       ) : phase === 'done' ? (
         <Page>
           <LearnProgress counts={counts} total={cards.length} />
-          <Section title={starredOnly ? 'All starred cards mastered' : 'Whole deck mastered'}>
+          <Section title={starredOnly ? m.learn.allStarredMastered : m.learn.deckMastered}>
             <p className="Lead">
-              All {pluralCards(cards.length)} mastered in {session?.roundNumber === 1 ? '1 round' : `${session?.roundNumber} rounds`}.
+              {m.learn.masteredIn(pluralCards(cards.length), session?.roundNumber ?? 1)}
             </p>
             <div className="Row">
               <Button variant="primary" onClick={() => start()}>
-                Learn again
+                {m.learn.again}
               </Button>
               <Button onClick={() => navigate(`/deck/${deck.id}/flashcards${starredOnly ? '/starred' : ''}`)}>
-                Review with flashcards
+                {m.learn.review}
               </Button>
             </div>
           </Section>
@@ -257,15 +255,15 @@ export function LearnMode({ deck, starredOnly }: { deck: Deck; starredOnly: bool
         <Page>
           <LearnProgress counts={counts} total={cards.length} />
           <Section
-            title={`End of round ${session.roundNumber}`}
+            title={m.learn.roundEnd(session.roundNumber)}
             actions={
               <Button variant="primary" onClick={continueRound}>
-                Next round
+                {m.learn.nextRound}
               </Button>
             }
           >
             <p className="Lead">
-              Correct: {session.results.filter((r) => r.correct).length} of {session.results.length}.
+              {m.learn.score(session.results.filter((r) => r.correct).length, session.results.length)}
             </p>
             <ol className="Results">
               {session.results.map((r, i) => {
@@ -277,7 +275,7 @@ export function LearnMode({ deck, starredOnly }: { deck: Deck; starredOnly: bool
                       className="Mark"
                       data-correct={r.correct || undefined}
                       data-wrong={!r.correct || undefined}
-                      aria-label={r.correct ? 'Correct' : 'Wrong'}
+                      aria-label={r.correct ? m.common.correct : m.common.wrong}
                     >
                       {r.correct ? '✓' : '✕'}
                     </span>
@@ -319,8 +317,8 @@ export function LearnMode({ deck, starredOnly }: { deck: Deck; starredOnly: bool
       <Sheet
         open={settingsOpen}
         onOpenChange={setSettingsOpen}
-        title="Learn settings"
-        description="Changing the settings restarts the session."
+        title={m.learn.settingsTitle}
+        description={m.learn.settingsText}
       >
         <LearnSettingsForm
           settings={settings}
@@ -347,65 +345,65 @@ function LearnSettingsForm({
   starredOnly: boolean
   starredCount: number
 }) {
+  const m = useT()
   return (
     <div className="SettingsForm">
       <Switch
-        label="Only starred cards"
-        description={starredCount > 0 ? `Learn only the ${pluralCards(starredCount)} you starred` : 'Star cards first to use this'}
+        label={m.common.onlyStarred}
+        description={starredCount > 0 ? m.learn.onlyStarredText(pluralCards(starredCount)) : m.common.starFirst}
         checked={starredOnly}
         disabled={!starredOnly && starredCount === 0}
         onCheckedChange={(on) => navigate(`/deck/${deckId}/learn${on ? '/starred' : ''}`, { replace: true })}
       />
-      <Fieldset legend="Question types">
+      <Fieldset legend={m.learn.types}>
         <Segmented<QuestionType>
-          label="Question types"
+          label={m.learn.types}
           multiple
           value={settings.types}
           onChange={(types) => onChange({ ...settings, types })}
-          options={(['mc', 'tf', 'written'] as const).map((t) => ({ value: t, label: QUESTION_TYPE_LABELS[t] }))}
+          options={(['mc', 'tf', 'written'] as const).map((t) => ({ value: t, label: m.learn.typeLabels[t] }))}
         />
       </Fieldset>
-      <Fieldset legend="Answer with">
+      <Fieldset legend={m.learn.answerWith}>
         <Segmented<AnswerWith>
-          label="Answer with"
+          label={m.learn.answerWith}
           value={[settings.answerWith]}
           onChange={([answerWith]) => onChange({ ...settings, answerWith })}
           options={[
-            { value: 'back', label: 'Back' },
-            { value: 'front', label: 'Front' },
-            { value: 'both', label: 'Both' },
+            { value: 'back', label: m.learn.answerBack },
+            { value: 'front', label: m.learn.answerFront },
+            { value: 'both', label: m.learn.answerBoth },
           ]}
         />
-        <p className="Hint">
-          “Back” – you see the question and give the answer. Cards with their own ABCD choices always ask for the back.
-        </p>
+        <p className="Hint">{m.learn.answerHint}</p>
       </Fieldset>
-      <Fieldset legend="Cards per round">
+      <Fieldset legend={m.learn.roundSize}>
         <Segmented<string>
-          label="Cards per round"
+          label={m.learn.roundSize}
           value={[String(settings.roundSize)]}
           onChange={([v]) => onChange({ ...settings, roundSize: Number(v) })}
           options={['5', '7', '10', '20'].map((v) => ({ value: v, label: v }))}
         />
       </Fieldset>
-      <Switch label="Shuffle" checked={settings.shuffle} onCheckedChange={(shuffle) => onChange({ ...settings, shuffle })} />
+      <Switch label={m.common.shuffle} checked={settings.shuffle} onCheckedChange={(shuffle) => onChange({ ...settings, shuffle })} />
     </div>
   )
 }
 
 function LearnProgress({ counts, total }: { counts: { new: number; learning: number; mastered: number }; total: number }) {
+  const m = useT()
   return (
     <div className="Stack">
-      <ProgressBar value={(counts.mastered / Math.max(1, total)) * 100} label="Mastered" />
+      <ProgressBar value={(counts.mastered / Math.max(1, total)) * 100} label={m.learn.mastered} />
       <div className="Stats">
         <span>
-          New: <strong>{counts.new}</strong>
+          {m.learn.newStat} <strong>{counts.new}</strong>
         </span>
         <span>
-          Learning: <strong>{counts.learning}</strong>
+          {m.learn.learningStat} <strong>{counts.learning}</strong>
         </span>
         <span>
-          Mastered: <strong>{counts.mastered}</strong>
+          {m.learn.masteredStat} <strong>{counts.mastered}</strong>
         </span>
       </div>
     </div>
@@ -425,10 +423,11 @@ function QuestionView({
   onStar: () => void
   onAnswer: (correct: boolean, extra?: Partial<Feedback>) => void
 }) {
+  const m = useT()
   return (
     <section className="Question">
       <div className="Flashcard-header">
-        <h2 className="Flashcard-label">{question.prompt === question.card.front ? 'Question' : 'Answer'}</h2>
+        <h2 className="Flashcard-label">{question.prompt === question.card.front ? m.common.question : m.common.answer}</h2>
         <StarToggle starred={starred} onToggle={onStar} />
       </div>
       <div className="Question-prompt">
@@ -452,6 +451,7 @@ function MultipleChoice({
   onAnswer: (correct: boolean, extra?: Partial<Feedback>) => void
 }) {
   const [selected, setSelected] = useState<string[]>([])
+  const m = useT()
   const answered = feedback !== null
 
   const submit = useCallback(
@@ -485,7 +485,7 @@ function MultipleChoice({
 
   return (
     <div className="Stack">
-      <p className="Muted">{question.multi ? 'Select all correct answers:' : 'Choose the correct answer:'}</p>
+      <p className="Muted">{question.multi ? m.learn.selectAll : m.learn.chooseOne}</p>
       <ol className="Options">
         {question.options.map((o, i) => {
           const picked = (feedback?.selected ?? selected).includes(o.id)
@@ -513,9 +513,9 @@ function MultipleChoice({
                 </span>
                 {result && (
                   <span className="Option-result">
-                    {result === 'correct' && '✓ correct'}
-                    {result === 'missed' && '✓ missed'}
-                    {result === 'wrong' && '✕ wrong'}
+                    {result === 'correct' && m.learn.optCorrect}
+                    {result === 'missed' && m.learn.optMissed}
+                    {result === 'wrong' && m.learn.optWrong}
                   </span>
                 )}
               </BaseButton>
@@ -526,11 +526,11 @@ function MultipleChoice({
       {question.multi && !answered && (
         <div>
           <Button variant="primary" disabled={selected.length === 0} onClick={() => submit(selected)}>
-            Check
+            {m.common.check}
           </Button>
         </div>
       )}
-      {!answered && <p className="Hint">You can also use the keys 1–{question.options.length}.</p>}
+      {!answered && <p className="Hint">{m.learn.keysHint(question.options.length)}</p>}
     </div>
   )
 }
@@ -545,21 +545,22 @@ function TrueFalse({
   onAnswer: (correct: boolean, extra?: Partial<Feedback>) => void
 }) {
   const answered = feedback !== null
+  const m = useT()
   return (
     <div className="Stack">
-      <p className="Muted">Is this the correct answer?</p>
+      <p className="Muted">{m.learn.isCorrect}</p>
       <blockquote className="Candidate">
         <SideContent side={question.candidate} />
       </blockquote>
       <div className="TwoButtons">
         <Button disabled={answered} onClick={() => onAnswer(question.isTrue, { selected: ['true'] })}>
-          True
+          {m.learn.true}
         </Button>
         <Button disabled={answered} onClick={() => onAnswer(!question.isTrue, { selected: ['false'] })}>
-          False
+          {m.learn.false}
         </Button>
       </div>
-      {answered && <p className="Muted">It's {question.isTrue ? 'true' : 'false'}.</p>}
+      {answered && <p className="Muted">{m.learn.itIs(question.isTrue)}</p>}
     </div>
   )
 }
@@ -574,6 +575,7 @@ function Written({
   onAnswer: (correct: boolean, extra?: Partial<Feedback>) => void
 }) {
   const [value, setValue] = useState('')
+  const m = useT()
   const answered = feedback !== null
   return (
     <form
@@ -585,7 +587,7 @@ function Written({
         onAnswer(result !== 'wrong', { given: value, typo: result === 'typo' })
       }}
     >
-      <Field label="Type the answer">
+      <Field label={m.learn.typeAnswer}>
         <FieldControl
           className="Input"
           value={value}
@@ -600,10 +602,10 @@ function Written({
       {!answered && (
         <div className="Row">
           <Button variant="primary" type="submit" disabled={!value.trim()}>
-            Check
+            {m.common.check}
           </Button>
           <Button type="button" variant="ghost" onClick={() => onAnswer(false, { given: '' })}>
-            I don't know
+            {m.learn.dontKnow}
           </Button>
         </div>
       )}
@@ -621,14 +623,15 @@ function SelfCheck({
   onAnswer: (correct: boolean) => void
 }) {
   const [revealed, setRevealed] = useState(false)
+  const m = useT()
   if (feedback) return null
   if (!revealed) {
     return (
       <div className="Stack">
-        <p className="Muted">Recall the answer, then reveal it.</p>
+        <p className="Muted">{m.learn.recall}</p>
         <div>
           <Button variant="primary" onClick={() => setRevealed(true)}>
-            Show answer
+            {m.learn.showAnswer}
           </Button>
         </div>
       </div>
@@ -639,11 +642,11 @@ function SelfCheck({
       <blockquote className="Candidate">
         <SideContent side={question.answer} />
       </blockquote>
-      <p className="Muted">Did you know the answer?</p>
+      <p className="Muted">{m.learn.didYouKnow}</p>
       <div className="TwoButtons">
-        <Button onClick={() => onAnswer(false)}>No</Button>
+        <Button onClick={() => onAnswer(false)}>{m.learn.no}</Button>
         <Button variant="primary" onClick={() => onAnswer(true)}>
-          Yes
+          {m.learn.yes}
         </Button>
       </div>
     </div>
@@ -661,30 +664,31 @@ function FeedbackPanel({
   onNext: () => void
   onOverride?: () => void
 }) {
+  const m = useT()
   return (
     <aside className="Feedback" role="status" data-correct={feedback.correct}>
       <h3 className="Feedback-title">
         {feedback.correct
           ? feedback.typo
-            ? 'Correct, but check the spelling'
-            : 'Correct!'
+            ? m.learn.fbTypo
+            : m.learn.fbCorrect
           : feedback.given === ''
-            ? "We'll come back to this card"
-            : "Wrong – we'll come back to this card"}
+            ? m.learn.fbSkipped
+            : m.learn.fbWrong}
       </h3>
       {(!feedback.correct || feedback.typo || question.kind === 'written') && (
         <div className="Feedback-answer">
-          <p className="Muted">Correct answer:</p>
+          <p className="Muted">{m.learn.correctAnswer}</p>
           <SideContent side={question.answer} />
         </div>
       )}
       <div className="Row">
         <Button variant="primary" onClick={onNext}>
-          Next (Enter)
+          {m.learn.next}
         </Button>
         {onOverride && (
           <Button variant="ghost" onClick={onOverride}>
-            My answer was correct
+            {m.learn.override}
           </Button>
         )}
       </div>

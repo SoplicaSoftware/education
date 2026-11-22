@@ -1,4 +1,5 @@
 import type { Card, Deck, Side } from '../types'
+import { t } from './i18n'
 
 export function uid(): string {
   if (typeof crypto !== 'undefined' && 'randomUUID' in crypto) return crypto.randomUUID()
@@ -39,9 +40,9 @@ export const studyableCards = (deck: Deck) =>
   deck.cards.filter((c) => !isSideEmpty(c.front) && (!isSideEmpty(c.back) || c.choices.some((ch) => ch.correct)))
 
 export function pluralCards(n: number): string {
-  return n === 1 ? '1 card' : `${n} cards`
+  return t().cards(n)
 }
 
 export function formatDate(ts: number): string {
-  return new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }).format(ts)
+  return new Intl.DateTimeFormat(t().locale, { day: 'numeric', month: 'short', year: 'numeric' }).format(ts)
 }

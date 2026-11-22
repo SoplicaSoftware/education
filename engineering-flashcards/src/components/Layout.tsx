@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import { navigate } from '../lib/router'
 import { ArrowLeftIcon, Button } from './ui'
+import { useT } from '../lib/i18n'
 
 export function TopBar({
   title,
@@ -13,11 +14,12 @@ export function TopBar({
   back?: string
   actions?: ReactNode
 }) {
+  const m = useT()
   return (
     <header className="TopBar">
       <div className="TopBar-inner">
         {back !== undefined && (
-          <Button size="icon" variant="ghost" aria-label="Back" onClick={() => navigate(back)}>
+          <Button size="icon" variant="ghost" aria-label={m.common.back} onClick={() => navigate(back)}>
             <ArrowLeftIcon />
           </Button>
         )}
@@ -68,9 +70,10 @@ export function EmptyState({
 }
 
 export function Spinner() {
+  const m = useT()
   return (
     <p className="Spinner" role="status">
-      Loading…
+      {m.common.loading}
     </p>
   )
 }

@@ -1,4 +1,5 @@
 import type { Card, Deck } from '../types'
+import { t } from './i18n'
 import { uid } from './utils'
 
 const svgDataUrl = (svg: string) => `data:image/svg+xml;base64,${btoa(svg)}`
@@ -43,35 +44,25 @@ const card = (front: string, back: string, extra: Partial<Card> = {}): Card => (
 })
 
 export function createSampleDeck(): Deck {
+  const m = t().sample
   const now = Date.now()
   return {
     id: uid(),
-    title: 'Example: physics and materials science',
-    description: 'A demo deck showing LaTeX, images and questions with several correct answers.',
+    title: m.title,
+    description: m.description,
     createdAt: now,
     updatedAt: now,
     cards: [
-      card("Newton's second law", '$\\vec F = m\\vec a$'),
-      card('Kinetic energy of a body with mass $m$ and velocity $v$', '$E_k = \\dfrac{mv^2}{2}$'),
-      card(
-        'What microstructure is this? (eutectoid steel, slowly cooled)',
-        'Pearlite – a lamellar mixture of ferrite $\\alpha$ and cementite $\\mathrm{Fe_3C}$',
-        { front: { text: 'What microstructure is this? (eutectoid steel, slowly cooled)', image: pearliteSvg() } },
-      ),
-      card('Force pulling the block down the inclined plane (no friction)', '$F = mg\\sin\\alpha$', {
-        front: { text: 'Force pulling the block down the inclined plane (no friction)', image: INCLINED_PLANE },
+      card(m.newton, '$\\vec F = m\\vec a$'),
+      card(m.kinetic, '$E_k = \\dfrac{mv^2}{2}$'),
+      card(m.pearliteQ, m.pearliteA, { front: { text: m.pearliteQ, image: pearliteSvg() } }),
+      card(m.incline, '$F = mg\\sin\\alpha$', { front: { text: m.incline, image: INCLINED_PLANE } }),
+      card(m.eutectoidQ, m.eutectoidA),
+      card(m.hooke, '$$\\sigma = E\\,\\varepsilon$$'),
+      card(m.phasesQ, '', {
+        choices: m.phases.map((text, i) => ({ id: uid(), text, correct: i < 3 })),
       }),
-      card('Carbon content at the eutectoid point of the Fe–Fe₃C system', '$0.77\\%\\,\\mathrm{C}$ (at about $727^\\circ\\mathrm{C}$)'),
-      card("Hooke's law (stress–strain)", '$$\\sigma = E\\,\\varepsilon$$'),
-      card('Which of these are phases in the Fe–Fe₃C system?', '', {
-        choices: [
-          { id: uid(), text: 'Ferrite $\\alpha$', correct: true },
-          { id: uid(), text: 'Austenite $\\gamma$', correct: true },
-          { id: uid(), text: 'Cementite $\\mathrm{Fe_3C}$', correct: true },
-          { id: uid(), text: 'Pearlite', correct: false },
-        ],
-      }),
-      card("Bernoulli's equation (steady, inviscid flow)", '$$p + \\frac{\\rho v^2}{2} + \\rho g h = \\text{const}$$'),
+      card(m.bernoulli, '$$p + \\frac{\\rho v^2}{2} + \\rho g h = \\text{const}$$'),
     ],
   }
 }

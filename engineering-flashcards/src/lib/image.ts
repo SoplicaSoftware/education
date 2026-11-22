@@ -1,4 +1,5 @@
 import type { ClipboardEvent } from 'react'
+import { t } from './i18n'
 
 const MAX_DIMENSION = 1600
 const KEEP_ORIGINAL_BELOW = 400 * 1024
@@ -7,7 +8,7 @@ function readAsDataUrl(file: Blob): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader()
     reader.onload = () => resolve(reader.result as string)
-    reader.onerror = () => reject(reader.error ?? new Error('Could not read the file.'))
+    reader.onerror = () => reject(reader.error ?? new Error(t().errors.readFile))
     reader.readAsDataURL(file)
   })
 }
@@ -16,7 +17,7 @@ function loadImage(src: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
     const img = new Image()
     img.onload = () => resolve(img)
-    img.onerror = () => reject(new Error('Could not load the image.'))
+    img.onerror = () => reject(new Error(t().errors.loadImage))
     img.src = src
   })
 }
@@ -26,7 +27,7 @@ function loadImage(src: string): Promise<HTMLImageElement> {
  * re-encoded so a deck with many micrographs still fits comfortably in storage.
  */
 export async function imageFileToDataUrl(file: Blob): Promise<string> {
-  if (!file.type.startsWith('image/')) throw new Error('The selected file is not an image.')
+  if (!file.type.startsWith('image/')) throw new Error(t().errors.notImage)
   const original = await readAsDataUrl(file)
   if (file.type === 'image/svg+xml' || file.type === 'image/gif') return original
 

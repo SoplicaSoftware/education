@@ -67,7 +67,46 @@
         padding: 3.5rem 1rem 4rem;
       }
       header {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 1rem;
         margin-bottom: 2rem;
+      }
+      header > div:first-child {
+        flex: 1 1 20rem;
+      }
+      .lang {
+        display: flex;
+        border: 1px solid var(--fg);
+        background: var(--bg);
+      }
+      .lang button {
+        min-width: 2.5rem;
+        height: 2rem;
+        padding: 0 0.625rem;
+        border: 0;
+        background: transparent;
+        color: var(--fg);
+        font: inherit;
+        font-size: 0.8125rem;
+        font-weight: 600;
+        cursor: pointer;
+      }
+      .lang button + button {
+        border-left: 1px solid var(--fg);
+      }
+      .lang button:hover {
+        background: var(--hover);
+      }
+      .lang button[aria-pressed='true'] {
+        background: var(--fg);
+        color: var(--bg);
+      }
+      .lang button:focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 2px;
       }
       h1 {
         margin: 0;
@@ -180,52 +219,115 @@
   <body>
     <div class="wrap">
       <header>
-        <h1>Soplica Software Education Hub</h1>
-        <p class="tagline">Interactive tools and materials for engineering studies.</p>
+        <div>
+          <h1 data-i18n="title">Soplica Software Education Hub</h1>
+          <p class="tagline" data-i18n="tagline">Interactive tools and materials for engineering studies.</p>
+        </div>
+        <div class="lang" role="group" aria-label="Language">
+          <button type="button" data-lang="en" aria-pressed="true">EN</button>
+          <button type="button" data-lang="pl" aria-pressed="false">PL</button>
+        </div>
       </header>
       <main>
         <section class="card" aria-labelledby="about-title">
-          <h2 class="card-label" id="about-title">About me</h2>
+          <h2 class="card-label" id="about-title" data-i18n="about">About me</h2>
           <div class="about">
             <div>
-              <p class="about-name"><strong>Hi! I'm Kacper.</strong></p>
-              <p class="about-role">Engineering student and software developer.</p>
+              <p class="about-name"><strong data-i18n="hi">Hi! I'm Kacper.</strong></p>
+              <p class="about-role" data-i18n="role">Engineering student and software developer.</p>
             </div>
             <dl class="facts">
-              <dt>University</dt>
-              <dd>AGH University of Krakow</dd>
-              <dt>Major</dt>
-              <dd>Technologies of Industry 4.0</dd>
-              <dt>Year</dt>
-              <dd>Second</dd>
+              <dt data-i18n="university">University</dt>
+              <dd data-i18n="agh">AGH University of Krakow</dd>
+              <dt data-i18n="major">Major</dt>
+              <dd data-i18n="majorName">Technologies of Industry 4.0</dd>
+              <dt data-i18n="year">Year</dt>
+              <dd data-i18n="second">Second</dd>
             </dl>
-            <p>
+            <p data-i18n-html="intro">
               This is where I keep the interactive education tools and materials I create, using AI to build them fast.
               I use <a href="https://base-ui.com">Base UI</a> for ready-made components and keep everything static, so
               it can be hosted on GitHub Pages.
             </p>
-            <p>If you stumble across this, feel free to use anything.</p>
-            <p class="signoff">And if you study the same major as I do – good luck…</p>
+            <p data-i18n="use">If you stumble across this, feel free to use anything.</p>
+            <p class="signoff" data-i18n="luck">And if you study the same major as I do – good luck…</p>
           </div>
         </section>
         <section class="card" aria-labelledby="projects-title">
-          <h2 class="card-label" id="projects-title">Projects</h2>
+          <h2 class="card-label" id="projects-title" data-i18n="projects">Projects</h2>
           <ul class="projects">
             <li>
               <a href="./engineering-flashcards/">
-                <strong>Engineering flashcards →</strong>
-                <span>Flashcards and a learn mode with LaTeX and image support.</span>
+                <strong data-i18n="flashcards">Engineering flashcards →</strong>
+                <span data-i18n="flashcardsText">Flashcards and a learn mode with LaTeX and image support.</span>
               </a>
             </li>
             <li>
-              <a href="./engineering-flashcards/how-to-create-flashcards.md" download>
-                <strong>How to create flashcards with AI ↓</strong>
-                <span>Paste this file into any AI chat with your notes to get a ready-to-import JSON deck.</span>
+              <a id="guide" href="./engineering-flashcards/how-to-create-flashcards.md" download>
+                <strong data-i18n="guide">How to create flashcards with AI ↓</strong>
+                <span data-i18n="guideText">Paste this file into any AI chat with your notes to get a ready-to-import JSON deck.</span>
               </a>
             </li>
           </ul>
         </section>
       </main>
     </div>
+    <script>
+      const PL = {
+        docTitle: 'Soplica Software – centrum edukacyjne',
+        title: 'Soplica Software – centrum edukacyjne',
+        tagline: 'Interaktywne narzędzia i materiały do nauki na studiach inżynierskich.',
+        about: 'O mnie',
+        hi: 'Cześć! Jestem Kacper.',
+        role: 'Student inżynierii i programista.',
+        university: 'Uczelnia',
+        agh: 'AGH w Krakowie',
+        major: 'Kierunek',
+        majorName: 'Technologie Przemysłu 4.0',
+        year: 'Rok',
+        second: 'Drugi',
+        intro:
+          'Trzymam tu interaktywne narzędzia i materiały do nauki, które tworzę, budując je szybko z pomocą AI. ' +
+          'Gotowe komponenty biorę z <a href="https://base-ui.com">Base UI</a>, a wszystko jest statyczne, ' +
+          'więc może działać na GitHub Pages.',
+        use: 'Jeśli tu trafisz, korzystaj śmiało ze wszystkiego.',
+        luck: 'A jeśli studiujesz ten sam kierunek co ja – powodzenia…',
+        projects: 'Projekty',
+        flashcards: 'Fiszki inżynierskie →',
+        flashcardsText: 'Fiszki i tryb nauki z obsługą LaTeX-a i zdjęć.',
+        guide: 'Jak tworzyć fiszki z AI ↓',
+        guideText: 'Wklej ten plik do dowolnego czatu AI razem z notatkami, a dostaniesz talię JSON gotową do importu.',
+        guideHref: './engineering-flashcards/jak-tworzyc-fiszki.md',
+      }
+      // The English text is what's in the markup; it's read once so switching back restores it.
+      const EN = { docTitle: document.title, guideHref: document.getElementById('guide').getAttribute('href') }
+      document.querySelectorAll('[data-i18n]').forEach((el) => (EN[el.dataset.i18n] = el.textContent))
+      document.querySelectorAll('[data-i18n-html]').forEach((el) => (EN[el.dataset.i18nHtml] = el.innerHTML))
+
+      // Shared with the flashcards app (same origin), so the choice carries over.
+      const KEY = 'lang'
+      function setLang(lang) {
+        const m = lang === 'pl' ? PL : EN
+        document.documentElement.lang = lang
+        document.title = m.docTitle
+        document.querySelectorAll('[data-i18n]').forEach((el) => (el.textContent = m[el.dataset.i18n]))
+        document.querySelectorAll('[data-i18n-html]').forEach((el) => (el.innerHTML = m[el.dataset.i18nHtml]))
+        document.getElementById('guide').setAttribute('href', m.guideHref)
+        document.querySelectorAll('[data-lang]').forEach((b) => b.setAttribute('aria-pressed', b.dataset.lang === lang))
+      }
+      let saved = null
+      try {
+        saved = localStorage.getItem(KEY)
+      } catch {}
+      setLang(saved === 'pl' || saved === 'en' ? saved : navigator.language.toLowerCase().startsWith('pl') ? 'pl' : 'en')
+      document.querySelectorAll('[data-lang]').forEach((b) =>
+        b.addEventListener('click', () => {
+          setLang(b.dataset.lang)
+          try {
+            localStorage.setItem(KEY, b.dataset.lang)
+          } catch {}
+        }),
+      )
+    </script>
   </body>
 </html>

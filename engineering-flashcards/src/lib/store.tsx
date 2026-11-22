@@ -3,6 +3,7 @@ import type { Deck } from '../types'
 import { deleteDeck, getAllDecks, putDeck } from './db'
 import { loadRepoDecks } from './repoDecks'
 import { uid } from './utils'
+import { t } from './i18n'
 
 interface DecksContextValue {
   /** Local decks plus decks from the repo's decks/ folder. A local copy overrides the repo version. */
@@ -27,7 +28,7 @@ export function DecksProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     getAllDecks()
       .then((all) => setLocal(all.sort(byUpdated)))
-      .catch((e: unknown) => setError(e instanceof Error ? e.message : 'Could not load your decks.'))
+      .catch((e: unknown) => setError(e instanceof Error ? e.message : t().errors.loadDecks))
     loadRepoDecks()
       .then(setRepo)
       .catch(() => setRepo([]))
@@ -57,7 +58,7 @@ export function DecksProvider({ children }: { children: ReactNode }) {
     async (incoming: Deck[]) => {
       const existing = new Set((decks ?? []).map((d) => d.id))
       const prepared = incoming.map((d) =>
-        existing.has(d.id) ? { ...d, id: uid(), title: `${d.title} (kopia)` } : d,
+        existing.has(d.id) ? { ...d, id: uid(), title: `${d.title} (${t().errors.copy})` } : d,
       )
       for (const deck of prepared) await putDeck(deck)
       setLocal((prev) => [...prepared, ...(prev ?? [])].sort(byUpdated))

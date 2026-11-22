@@ -15,6 +15,7 @@ import { Toggle } from '@base-ui/react/toggle'
 import { ToggleGroup } from '@base-ui/react/toggle-group'
 import { Fragment, useId, type ComponentProps, type ReactNode } from 'react'
 import { cx } from '../lib/utils'
+import { useT } from '../lib/i18n'
 
 type ButtonVariant = 'default' | 'primary' | 'ghost' | 'danger'
 type ButtonSize = 'md' | 'lg' | 'icon'
@@ -161,6 +162,7 @@ export function Sheet({
   footer?: ReactNode
   size?: 'lg'
 }) {
+  const m = useT()
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <Dialog.Portal>
@@ -172,7 +174,7 @@ export function Sheet({
           </div>
           {children}
           <div className="Popup-actions">
-            <Dialog.Close render={<Button />}>Close</Dialog.Close>
+            <Dialog.Close render={<Button />}>{m.common.close}</Dialog.Close>
             {footer}
           </div>
         </Dialog.Popup>
@@ -196,6 +198,7 @@ export function ConfirmDialog({
   confirmLabel: string
   onConfirm: () => void
 }) {
+  const m = useT()
   return (
     <AlertDialog.Root open={open} onOpenChange={onOpenChange}>
       <AlertDialog.Portal>
@@ -206,7 +209,7 @@ export function ConfirmDialog({
             <AlertDialog.Description className="Popup-description">{description}</AlertDialog.Description>
           </div>
           <div className="Popup-actions">
-            <AlertDialog.Close render={<Button />}>Cancel</AlertDialog.Close>
+            <AlertDialog.Close render={<Button />}>{m.common.cancel}</AlertDialog.Close>
             <Button
               variant="danger"
               onClick={() => {
@@ -273,6 +276,7 @@ export function notify(title: string, description?: string, type: 'success' | 'e
 
 function ToastList() {
   const { toasts } = Toast.useToastManager()
+  const m = useT()
   return toasts.map((toast) => (
     <Toast.Root key={toast.id} toast={toast} className="Toast" data-type={toast.type}>
       <Toast.Content className="Toast-content">
@@ -280,7 +284,7 @@ function ToastList() {
           <Toast.Title className="Toast-title" />
           <Toast.Description className="Toast-description" />
         </div>
-        <Toast.Close render={<Button size="icon" variant="ghost" />} aria-label="Close">
+        <Toast.Close render={<Button size="icon" variant="ghost" />} aria-label={m.common.close}>
           <CloseIcon />
         </Toast.Close>
       </Toast.Content>
@@ -304,19 +308,20 @@ export function Toaster({ children }: { children: ReactNode }) {
 export function StarToggle({
   starred,
   onToggle,
-  label = 'Star this card',
+  label,
 }: {
   starred: boolean
   onToggle: () => void
   label?: string
 }) {
+  const m = useT()
   return (
     <Toggle
       className="Star"
       pressed={starred}
       onPressedChange={onToggle}
-      aria-label={label}
-      title={starred ? 'Starred – click to remove' : 'Star to focus on this card'}
+      aria-label={label ?? m.star.label}
+      title={starred ? m.star.on : m.star.off}
       onClick={(e) => e.stopPropagation()}
     >
       <StarIcon />

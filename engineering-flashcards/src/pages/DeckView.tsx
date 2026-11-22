@@ -18,10 +18,12 @@ import { useStars } from '../lib/stars'
 import { useDecks } from '../lib/store'
 import { isCardEmpty, pluralCards, studyableCards, uid } from '../lib/utils'
 import type { Deck } from '../types'
+import { useT } from '../lib/i18n'
 
 export function DeckView({ deck }: { deck: Deck }) {
   const { removeDeck, saveDeck, localIds } = useDecks()
   const { isStarred, toggle } = useStars(deck.id)
+  const m = useT()
   const [confirmDelete, setConfirmDelete] = useState(false)
   const [filter, setFilter] = useState<'all' | 'starred'>('all')
   const fromRepo = isRepoDeck(deck.id)
@@ -33,9 +35,9 @@ export function DeckView({ deck }: { deck: Deck }) {
   const shown = filter === 'starred' ? cards.filter((c) => isStarred(c.id)) : cards
 
   const duplicate = async () => {
-    const copy: Deck = { ...structuredClone(deck), id: uid(), title: `${deck.title} (copy)`, createdAt: Date.now() }
+    const copy: Deck = { ...structuredClone(deck), id: uid(), title: `${deck.title} (${m.errors.copy})`, createdAt: Date.now() }
     await saveDeck(copy)
-    notify('Deck duplicated')
+    notify(m.deck.duplicated)
     navigate(`/deck/${copy.id}`)
   }
 
@@ -43,22 +45,22 @@ export function DeckView({ deck }: { deck: Deck }) {
     <>
       <TopBar
         back="/"
-        title={deck.title || 'Untitled'}
+        title={deck.title || m.common.untitled}
         subtitle={pluralCards(deck.cards.length)}
         actions={
           <>
-            <Button onClick={() => navigate(`/deck/${deck.id}/edit`)}>Edit</Button>
+            <Button onClick={() => navigate(`/deck/${deck.id}/edit`)}>{m.deck.edit}</Button>
             <DropdownMenu
-              label="More"
+              label={m.common.more}
               items={[
-                { label: 'Export to JSON', onClick: () => downloadDecks([deck]) },
-                { label: 'Duplicate', onClick: duplicate },
+                { label: m.deck.export, onClick: () => downloadDecks([deck]) },
+                { label: m.deck.duplicate, onClick: duplicate },
                 ...(!fromRepo
-                  ? [{ label: 'Delete deck', onClick: () => setConfirmDelete(true), danger: true, separatorBefore: true }]
+                  ? [{ label: m.deck.delete, onClick: () => setConfirmDelete(true), danger: true, separatorBefore: true }]
                   : modified
                     ? [
                         {
-                          label: 'Restore repository version',
+                          label: m.deck.restore,
                           onClick: () => setConfirmDelete(true),
                           danger: true,
                           separatorBefore: true,
@@ -76,19 +78,19 @@ export function DeckView({ deck }: { deck: Deck }) {
             {deck.description && <p className="Lead">{deck.description}</p>}
             {fromRepo && (
               <p className="Hint">
-                Deck from <code>decks/{repoDeckFile(deck.id)}</code>.{' '}
+                {m.deck.fromRepo} <code>decks/{repoDeckFile(deck.id)}</code>.{' '}
                 {modified
-                  ? 'You have local edits – saved only in this browser.'
-                  : 'Edits you make are saved only in this browser.'}
+                  ? m.deck.localEdits
+                  : m.deck.editsLocal}
               </p>
             )}
           </div>
         )}
 
         {playable.length === 0 ? (
-          <EmptyState title="This deck is empty" description="Add cards with a question and an answer to start studying.">
+          <EmptyState title={m.deck.emptyTitle} description={m.deck.emptyText}>
             <Button variant="primary" onClick={() => navigate(`/deck/${deck.id}/edit`)}>
-              Add cards
+              {m.deck.addCards}
             </Button>
           </EmptyState>
         ) : (
@@ -96,27 +98,25 @@ export function DeckView({ deck }: { deck: Deck }) {
             <div className="Modes">
               <button type="button" className="ModeCard" onClick={() => navigate(`/deck/${deck.id}/flashcards`)}>
                 <span className="ModeCard-title">
-                  Flashcards <ChevronRightIcon />
+                  {m.common.flashcards} <ChevronRightIcon />
                 </span>
-                <span className="ModeCard-description">Flip cards and repeat the ones you don't know yet.</span>
+                <span className="ModeCard-description">{m.deck.flashcardsText}</span>
               </button>
               <button type="button" className="ModeCard" onClick={() => navigate(`/deck/${deck.id}/learn`)}>
                 <span className="ModeCard-title">
-                  Learn <ChevronRightIcon />
+                  {m.common.learn} <ChevronRightIcon />
                 </span>
-                <span className="ModeCard-description">
-                  Multiple choice, true/false and written questions until you master the deck.
-                </span>
+                <span className="ModeCard-description">{m.deck.learnText}</span>
               </button>
             </div>
             {starredPlayable > 0 && (
               <div className="StarredBar">
                 <span className="StarCount">
-                  <StarIcon /> {starredPlayable} starred
+                  <StarIcon /> {m.star.count(starredPlayable)}
                 </span>
-                <span className="Muted">Practise only these:</span>
-                <Button onClick={() => navigate(`/deck/${deck.id}/flashcards/starred`)}>Flashcards</Button>
-                <Button onClick={() => navigate(`/deck/${deck.id}/learn/starred`)}>Learn</Button>
+                <span className="Muted">{m.deck.practiseOnly}</span>
+                <Button onClick={() => navigate(`/deck/${deck.id}/flashcards/starred`)}>{m.common.flashcards}</Button>
+                <Button onClick={() => navigate(`/deck/${deck.id}/learn/starred`)}>{m.common.learn}</Button>
               </div>
             )}
           </div>
@@ -124,23 +124,21 @@ export function DeckView({ deck }: { deck: Deck }) {
 
         {cards.length > 0 && (
           <Section
-            title={`Cards in this deck (${cards.length})`}
+            title={m.deck.cardsInDeck(cards.length)}
             actions={
               <Segmented
-                label="Show cards"
+                label={m.deck.showCards}
                 value={[filter]}
                 onChange={([v]) => setFilter(v)}
                 options={[
-                  { value: 'all', label: 'All' },
-                  { value: 'starred', label: `Starred (${starredCount})` },
+                  { value: 'all', label: m.deck.all },
+                  { value: 'starred', label: m.deck.starred(starredCount) },
                 ]}
               />
             }
           >
             {shown.length === 0 ? (
-              <p className="Muted">
-                No starred cards yet. Tap the star next to a card you want to focus on – it's hard, or it's important.
-              </p>
+              <p className="Muted">{m.deck.noStarred}</p>
             ) : (
               <ol className="List">
                 {shown.map((card) => {
@@ -163,7 +161,7 @@ export function DeckView({ deck }: { deck: Deck }) {
                                 className="Mark"
                                 data-correct={ch.correct || undefined}
                                 data-wrong={!ch.correct || undefined}
-                                aria-label={ch.correct ? 'Correct' : 'Wrong'}
+                                aria-label={ch.correct ? m.common.correct : m.common.wrong}
                               >
                                 {ch.correct ? '✓' : '✕'}
                               </span>
@@ -185,25 +183,25 @@ export function DeckView({ deck }: { deck: Deck }) {
         <ConfirmDialog
           open={confirmDelete}
           onOpenChange={setConfirmDelete}
-          title="Restore the repository version?"
-          description="Your local edits to this deck will be removed and you'll see it exactly as in the repository file."
-          confirmLabel="Restore"
+          title={m.deck.restoreTitle}
+          description={m.deck.restoreText}
+          confirmLabel={m.deck.restoreConfirm}
           onConfirm={async () => {
             await removeDeck(deck.id)
-            notify('Repository version restored')
+            notify(m.deck.restored)
           }}
         />
       ) : (
         <ConfirmDialog
           open={confirmDelete}
           onOpenChange={setConfirmDelete}
-          title="Delete this deck?"
-          description={`“${deck.title || 'Untitled'}” will be permanently deleted from this browser. Export it first if you want to keep it.`}
-          confirmLabel="Delete"
+          title={m.deck.deleteTitle}
+          description={m.deck.deleteText(deck.title || m.common.untitled)}
+          confirmLabel={m.deck.deleteConfirm}
           onConfirm={async () => {
             navigate('/')
             await removeDeck(deck.id)
-            notify('Deck deleted')
+            notify(m.deck.deleted)
           }}
         />
       )}
