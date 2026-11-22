@@ -9,6 +9,17 @@ import { isRepoDeck, repoDeckFile } from '../lib/repoDecks'
 import { formatDate, newDeck, pluralCards } from '../lib/utils'
 import type { Deck } from '../types'
 
+const AI_GUIDE = './how-to-create-flashcards.md'
+
+function downloadAiGuide() {
+  const a = document.createElement('a')
+  a.href = AI_GUIDE
+  a.download = 'how-to-create-flashcards.md'
+  document.body.appendChild(a)
+  a.click()
+  a.remove()
+}
+
 export function DeckList() {
   const { decks, localIds, error, saveDeck, importDecks } = useDecks()
   const fileInput = useRef<HTMLInputElement>(null)
@@ -58,6 +69,7 @@ export function DeckList() {
                 { label: 'Importuj z pliku JSON', onClick: () => fileInput.current?.click() },
                 ...(decks && decks.length > 0 ? [{ label: 'Eksportuj wszystkie', onClick: () => downloadDecks(decks) }] : []),
                 { label: 'Dodaj przykładowy zestaw', onClick: addSample },
+                { label: 'Instrukcja do generowania fiszek przez AI', onClick: downloadAiGuide, separatorBefore: true },
               ]}
             />
           </>
@@ -106,6 +118,20 @@ export function DeckList() {
               </Section>
             )}
           </>
+        )}
+        {!error && decks !== null && (
+          <section className="AiGuide">
+            <div className="AiGuide-text">
+              <h2>Wygeneruj fiszki z AI</h2>
+              <p className="Muted">
+                Pobierz instrukcję, wklej ją do dowolnego czatu AI razem ze swoimi notatkami i zaimportuj otrzymany plik
+                JSON.
+              </p>
+            </div>
+            <a className="Button" href={AI_GUIDE} download>
+              Pobierz instrukcję (.md)
+            </a>
+          </section>
         )}
       </Page>
     </>
