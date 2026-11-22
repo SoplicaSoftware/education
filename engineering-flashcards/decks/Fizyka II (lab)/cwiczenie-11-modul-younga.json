@@ -12,7 +12,7 @@
             "text": "Sformułuj prawo Hooke’a. Co to są odkształcenia sprężyste?"
           },
           "back": {
-            "text": "Prawo Hooke’a: w zakresie sprężystym odkształcenie ciała jest wprost proporcjonalne do przyłożonej siły (naprężenia).\nWzór: $\\sigma = E\\,\\varepsilon$\nOdkształcenie sprężyste: odkształcenie, które znika po usunięciu siły – ciało wraca do pierwotnego kształtu."
+            "text": "Prawo Hooke’a: w zakresie sprężystym odkształcenie ciała jest wprost proporcjonalne do przyłożonej siły (naprężenia).\nWzór: $\\sigma = E\\,\\varepsilon$, gdzie $\\sigma$ – naprężenie, $\\varepsilon$ – odkształcenie względne, $E$ – moduł Younga\nOdkształcenie sprężyste: odkształcenie, które całkowicie znika po usunięciu siły – ciało wraca do pierwotnego kształtu."
           },
           "explanation": "Dla rozciąganego pręta o długości $l$ i polu przekroju $S$ prawo Hooke’a ma postać:\n$$\\Delta l = \\dfrac{F\\,l}{E\\,S}$$\nWydłużenie $\\Delta l$ rośnie z siłą $F$ i długością pręta, a maleje z polem przekroju. $E$ to moduł Younga – stała zależna tylko od materiału.\n\nTa sama zależność zapisana przez naprężenie $\\sigma = F/S$ i odkształcenie względne $\\varepsilon = \\Delta l / l$ (dzielimy obie strony przez $l$ i mnożymy przez $E$):\n$$E\\,\\dfrac{\\Delta l}{l} = \\dfrac{F}{S} \\;\\Rightarrow\\; \\sigma = E\\,\\varepsilon$$\nTa postać nie zależy od wymiarów próbki.\n\nPrawo działa tylko do granicy proporcjonalności – na wykresie $\\sigma(\\varepsilon)$ to odcinek prostoliniowy. Dalej zależność przestaje być liniowa, a po przekroczeniu granicy sprężystości odkształcenie staje się trwałe (plastyczne).\n\nŹródła:\nhttps://pf.agh.edu.pl/home/wfiis/pracfiz/Opisy_cwiczen/11_opis.pdf\nhttps://pl.wikipedia.org/wiki/Prawo_Hooke%E2%80%99a"
         },
@@ -22,7 +22,7 @@
             "text": "Pojęcie naprężenia. Rodzaje naprężeń."
           },
           "back": {
-            "text": "Definicja: naprężenie to siła przypadająca na jednostkę pola przekroju.\nWzór: $\\sigma = \\dfrac{F}{S}$\nJednostka: Pa = N/m²\nRodzaje: normalne $\\sigma$ (siła prostopadła do przekroju – rozciągające, ściskające) i styczne $\\tau$ (siła równoległa do przekroju – ścinające, skręcające)."
+            "text": "Definicja: naprężenie to siła przypadająca na jednostkę pola przekroju.\nWzór: $\\sigma = \\dfrac{F}{S}$\nJednostka: Pa = N/m²\nRodzaje: normalne $\\sigma$ – siła prostopadła do przekroju (rozciąganie, ściskanie); styczne $\\tau$ – siła równoległa do przekroju (ścinanie, skręcanie)."
           },
           "explanation": "Rodzaj naprężenia zależy od kierunku siły względem przekroju:\n• normalne $\\sigma$ – siła prostopadła do przekroju; powstaje przy rozciąganiu i ściskaniu (oraz zginaniu),\n• styczne $\\tau$ – siła leży w płaszczyźnie przekroju; powstaje przy ścinaniu i skręcaniu.\n\nJednostka: $[\\sigma] = \\dfrac{\\mathrm{N}}{\\mathrm{m^2}} = \\mathrm{Pa}$. W wytrzymałości materiałów zwykle podaje się MPa.\n\nW ćwiczeniu z modułem Younga drut jest rozciągany ciężarkami, więc występuje naprężenie normalne rozciągające. Naprężenia styczne bada się przy wyznaczaniu modułu sztywności $G$.\n\nŹródła:\nhttps://pf.agh.edu.pl/home/wfiis/pracfiz/Opisy_cwiczen/11_opis.pdf\nhttps://pkm.edu.pl/baza-wiedzy/materialy-konstrukcyjne/stale/podstawowe-warunki-wytrzymalosciowe/"
         },
@@ -52,7 +52,7 @@
             "text": "Co dzieje się z drutem po przekroczeniu granicy sprężystości?"
           },
           "back": {
-            "text": "Drut odkształca się plastycznie – wydłużenie staje się trwałe i po zdjęciu obciążenia drut nie wraca do pierwotnej długości.\nPrzy dalszym zwiększaniu naprężenia osiąga naprężenie maksymalne i się zrywa."
+            "text": "Drut odkształca się plastycznie: wydłużenie jest trwałe i po zdjęciu obciążenia drut nie wraca do pierwotnej długości. Prawo Hooke’a przestaje obowiązywać.\nPrzy dalszym zwiększaniu obciążenia drut osiąga naprężenie maksymalne i się zrywa."
           },
           "explanation": "Kolejne etapy rozciągania metalu (wykres $\\sigma(\\varepsilon)$):\n1. Granica proporcjonalności – do niej $\\sigma$ rośnie liniowo z $\\varepsilon$ (prawo Hooke’a).\n2. Granica sprężystości – do niej odkształcenie jest odwracalne; po jej przekroczeniu zaczyna się odkształcenie trwałe (plastyczne).\n3. Naprężenie maksymalne (wytrzymałość na rozciąganie) – największe naprężenie, jakie materiał przeniesie.\n4. Zerwanie.\n\nMateriały kruche (np. szkło) nie mają zakresu plastycznego – po przekroczeniu pewnego naprężenia od razu pękają.\n\nDlatego w ćwiczeniu nie przekracza się obciążenia: drut stalowy maks. 10 kg, mosiężny i miedziany maks. 6 kg. Po przekroczeniu granicy sprężystości pomiar modułu Younga przestaje mieć sens, bo prawo Hooke’a już nie obowiązuje.\n\nŹródła:\nhttps://pf.agh.edu.pl/home/wfiis/pracfiz/Opisy_cwiczen/11_opis.pdf\nhttps://pf.agh.edu.pl/home/wfiis/pracfiz/Opisy_cwiczen/11_wykon.pdf"
         },
@@ -62,7 +62,7 @@
             "text": "Dlaczego zmiany długości drutu są dwa razy mniejsze od zmian długości podawanych przez czujnik?"
           },
           "back": {
-            "text": "Bo wydłużenie jest mierzone przez dźwignię: drut jest zamocowany w połowie ramienia dźwigni, a czujnik na jej końcu, więc koniec dźwigni przesuwa się dwa razy bardziej niż drut się wydłuża.\nWzór: $\\Delta l = \\dfrac{\\text{odczyt czujnika}}{2}$"
+            "text": "Bo wydłużenie jest przenoszone na czujnik przez dźwignię: drut jest zamocowany w połowie jej ramienia, a czujnik na końcu, więc czujnik przesuwa się dwa razy bardziej niż koniec drutu.\nWzór: $\\Delta l = \\dfrac{\\text{odczyt czujnika}}{2}$"
           },
           "explanation": "Dźwignia obraca się wokół osi. Przy małym kącie obrotu przesunięcie punktu jest proporcjonalne do jego odległości od osi:\n• drut w odległości $r$ od osi przesuwa się o $\\Delta l$,\n• czujnik w odległości $2r$ przesuwa się o $2\\,\\Delta l$.\n\nW opracowaniu wyników średnie wydłużenie liczy się z odczytów przy dokładaniu ($cz\\uparrow$) i zdejmowaniu ($cz\\downarrow$) ciężarków:\n$$\\Delta l = \\dfrac{cz\\uparrow + cz\\downarrow}{4}$$\nDzielenie przez 4 to: przez 2 – bo średnia z dwóch odczytów, i jeszcze przez 2 – bo dźwignia.\n\nŹródła:\nhttps://pf.agh.edu.pl/home/wfiis/pracfiz/Opisy_cwiczen/11_opis.pdf\nhttps://pf.agh.edu.pl/home/wfiis/pracfiz/Opisy_cwiczen/11_wykon.pdf"
         },
@@ -72,7 +72,7 @@
             "text": "Czym różni się wzór definicyjny modułu Younga od wzoru roboczego?"
           },
           "back": {
-            "text": "Wzór definicyjny: $E = \\dfrac{F\\,l}{S\\,\\Delta l}$ – wprost z prawa Hooke’a, wystarczy jeden pomiar siły $F$ i wydłużenia $\\Delta l$.\nWzór roboczy: $E = \\dfrac{4\\,l}{\\pi d^2 a}$ – zamiast $F$ i $\\Delta l$ jest nachylenie $a$ prostej $\\Delta l(F)$ dopasowanej do wielu pomiarów, a zamiast $S$ – średnica drutu $d$."
+            "text": "Różnica: wzór definicyjny wyznacza $E$ z jednego pomiaru siły i wydłużenia, a wzór roboczy – z nachylenia prostej $\\Delta l(F)$ dopasowanej do serii pomiarów, z polem przekroju wyrażonym przez średnicę drutu.\n\nWzór definicyjny: $E = \\dfrac{F\\,l}{S\\,\\Delta l}$\n\nWzór roboczy: $E = \\dfrac{4\\,l}{\\pi d^2 a}$, gdzie $a$ – nachylenie prostej $\\Delta l(F)$, $d$ – średnica drutu"
           },
           "explanation": "Skąd wzór roboczy:\n1. Z prawa Hooke’a wydłużenie zależy liniowo od siły, więc punkty pomiarowe leżą na prostej $\\Delta l = aF + b$.\n2. Porównując z $\\Delta l = \\dfrac{l}{E\\,S}\\,F$, nachylenie to $a = \\dfrac{l}{E\\,S}$, więc $E = \\dfrac{l}{S\\,a}$.\n3. Pole przekroju drutu liczymy ze zmierzonej średnicy: $S = \\dfrac{\\pi d^2}{4}$:\n$$E = \\dfrac{l}{\\frac{\\pi d^2}{4}\\,a} = \\dfrac{4\\,l}{\\pi d^2 a}$$\nDlaczego tak lepiej: prosta dopasowana metodą najmniejszych kwadratów do wielu punktów uśrednia przypadkowe błędy odczytu $\\Delta l$, a wyraz $b$ pochłania przesunięcie zera (np. luz drutu na początku).\n\nJeśli rysuje się wykres $\\Delta l$ od masy $m$ zamiast od siły, to $F = mg$ i wzór dostaje $g$: $E = \\dfrac{4\\,l\\,g}{\\pi d^2 a}$.\n\nŹródła:\nhttps://pf.agh.edu.pl/home/wfiis/pracfiz/Opisy_cwiczen/11_opis.pdf\nhttps://pf.agh.edu.pl/home/wfiis/pracfiz/Opisy_cwiczen/11_wykon.pdf"
         }
