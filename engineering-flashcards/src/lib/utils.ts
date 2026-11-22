@@ -39,13 +39,9 @@ export const studyableCards = (deck: Deck) =>
   deck.cards.filter((c) => !isSideEmpty(c.front) && (!isSideEmpty(c.back) || c.choices.some((ch) => ch.correct)))
 
 export function pluralCards(n: number): string {
-  if (n === 1) return '1 fiszka'
-  const lastTwo = n % 100
-  const last = n % 10
-  if (last >= 2 && last <= 4 && (lastTwo < 12 || lastTwo > 14)) return `${n} fiszki`
-  return `${n} fiszek`
+  return n === 1 ? '1 card' : `${n} cards`
 }
 
 export function formatDate(ts: number): string {
-  return new Intl.DateTimeFormat('pl-PL', { day: 'numeric', month: 'short', year: 'numeric' }).format(ts)
+  return new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }).format(ts)
 }

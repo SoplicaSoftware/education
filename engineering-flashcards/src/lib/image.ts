@@ -7,7 +7,7 @@ function readAsDataUrl(file: Blob): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader()
     reader.onload = () => resolve(reader.result as string)
-    reader.onerror = () => reject(reader.error ?? new Error('Nie udało się odczytać pliku.'))
+    reader.onerror = () => reject(reader.error ?? new Error('Could not read the file.'))
     reader.readAsDataURL(file)
   })
 }
@@ -16,7 +16,7 @@ function loadImage(src: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
     const img = new Image()
     img.onload = () => resolve(img)
-    img.onerror = () => reject(new Error('Nie udało się wczytać obrazu.'))
+    img.onerror = () => reject(new Error('Could not load the image.'))
     img.src = src
   })
 }
@@ -26,7 +26,7 @@ function loadImage(src: string): Promise<HTMLImageElement> {
  * re-encoded so a deck with many micrographs still fits comfortably in storage.
  */
 export async function imageFileToDataUrl(file: Blob): Promise<string> {
-  if (!file.type.startsWith('image/')) throw new Error('Wybrany plik nie jest obrazem.')
+  if (!file.type.startsWith('image/')) throw new Error('The selected file is not an image.')
   const original = await readAsDataUrl(file)
   if (file.type === 'image/svg+xml' || file.type === 'image/gif') return original
 

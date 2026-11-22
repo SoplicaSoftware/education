@@ -10,7 +10,7 @@ function openDb(): Promise<IDBDatabase> {
   if (!dbPromise) {
     dbPromise = new Promise((resolve, reject) => {
       if (typeof indexedDB === 'undefined') {
-        reject(new Error('Ta przeglądarka nie obsługuje IndexedDB.'))
+        reject(new Error('This browser does not support IndexedDB.'))
         return
       }
       const request = indexedDB.open(DB_NAME, 1)
@@ -18,7 +18,7 @@ function openDb(): Promise<IDBDatabase> {
         request.result.createObjectStore(STORE, { keyPath: 'id' })
       }
       request.onsuccess = () => resolve(request.result)
-      request.onerror = () => reject(request.error ?? new Error('Nie udało się otworzyć bazy danych.'))
+      request.onerror = () => reject(request.error ?? new Error('Could not open the database.'))
     })
   }
   return dbPromise
@@ -32,7 +32,7 @@ function run<T>(mode: IDBTransactionMode, fn: (store: IDBObjectStore) => IDBRequ
         const request = fn(tx.objectStore(STORE))
         tx.oncomplete = () => resolve(request.result)
         tx.onerror = () => reject(tx.error ?? request.error)
-        tx.onabort = () => reject(tx.error ?? new Error('Transakcja przerwana.'))
+        tx.onabort = () => reject(tx.error ?? new Error('Transaction aborted.'))
       }),
   )
 }

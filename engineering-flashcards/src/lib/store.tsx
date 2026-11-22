@@ -27,7 +27,7 @@ export function DecksProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     getAllDecks()
       .then((all) => setLocal(all.sort(byUpdated)))
-      .catch((e: unknown) => setError(e instanceof Error ? e.message : 'Nie udało się wczytać zestawów.'))
+      .catch((e: unknown) => setError(e instanceof Error ? e.message : 'Could not load your decks.'))
     loadRepoDecks()
       .then(setRepo)
       .catch(() => setRepo([]))

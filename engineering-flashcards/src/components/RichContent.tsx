@@ -16,7 +16,7 @@ export function ZoomableImage({ src, alt }: { src: string; alt: string }) {
       <button
         type="button"
         className="Zoomable"
-        aria-label="Powiększ zdjęcie"
+        aria-label="Enlarge image"
         onClick={(e) => {
           e.stopPropagation()
           setOpen(true)
@@ -28,10 +28,10 @@ export function ZoomableImage({ src, alt }: { src: string; alt: string }) {
         <Dialog.Portal>
           <Dialog.Backdrop className="Backdrop" />
           <Dialog.Popup className="Popup" data-size="lg" onClick={(e) => e.stopPropagation()}>
-            <Dialog.Title className="Popup-title">Zdjęcie</Dialog.Title>
+            <Dialog.Title className="Popup-title">Image</Dialog.Title>
             <img className="Zoomable-full" src={src} alt={alt} />
             <div className="Popup-actions">
-              <Dialog.Close render={<Button />}>Zamknij</Dialog.Close>
+              <Dialog.Close render={<Button />}>Close</Dialog.Close>
             </div>
           </Dialog.Popup>
         </Dialog.Portal>
@@ -44,7 +44,7 @@ export function ZoomableImage({ src, alt }: { src: string; alt: string }) {
 export function SideContent({ side }: { side: Side }) {
   return (
     <div className="SideContent">
-      {side.image && <ZoomableImage src={side.image} alt={side.text || 'Zdjęcie na fiszce'} />}
+      {side.image && <ZoomableImage src={side.image} alt={side.text || 'Card image'} />}
       {side.text.trim() && <RichText text={side.text} />}
     </div>
   )
