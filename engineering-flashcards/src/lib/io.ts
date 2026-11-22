@@ -32,7 +32,10 @@ function toCard(v: unknown, fallbackId?: string): Card | null {
   const front = toSide(v.front ?? v.term ?? v.question)
   const back = toSide(v.back ?? v.definition ?? v.answer)
   const choices = Array.isArray(v.choices) ? v.choices.map(toChoice).filter((c): c is Choice => c !== null) : []
-  return { id: str(v.id) || fallbackId || uid(), front, back, choices }
+  const card: Card = { id: str(v.id) || fallbackId || uid(), front, back, choices }
+  const explanation = str(v.explanation)
+  if (explanation.trim()) card.explanation = explanation
+  return card
 }
 
 function toDeck(v: unknown, cardId?: (cardIndex: number) => string): Deck | null {

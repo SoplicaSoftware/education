@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { EmptyState, Page, Section, TopBar } from '../components/Layout'
-import { SideContent } from '../components/RichContent'
+import { Explanation, SideContent } from '../components/RichContent'
 import { Button, ProgressBar, Sheet, StarToggle, Switch, notify } from '../components/ui'
 import { usePref } from '../lib/prefs'
 import { navigate } from '../lib/router'
@@ -215,6 +215,7 @@ export function FlashcardsMode({ deck, starredOnly }: { deck: Deck; starredOnly:
             key={card.id}
             front={settings.startWithBack ? backSide(card) : card.front}
             back={settings.startWithBack ? card.front : backSide(card)}
+            explanation={flipped !== settings.startWithBack ? card.explanation : undefined}
             flipped={flipped}
             starred={stars.isStarred(card.id)}
             onStar={() => toggleStar(card.id)}
@@ -284,6 +285,7 @@ export function FlashcardsMode({ deck, starredOnly }: { deck: Deck; starredOnly:
 function FlashcardView({
   front,
   back,
+  explanation,
   flipped,
   starred,
   onStar,
@@ -292,6 +294,7 @@ function FlashcardView({
 }: {
   front: Side
   back: Side
+  explanation?: string
   flipped: boolean
   starred: boolean
   onStar: () => void
@@ -310,7 +313,7 @@ function FlashcardView({
       aria-label={flipped ? m.flashcards.showQuestion : m.flashcards.showAnswer}
       data-flipped={flipped || undefined}
       onClick={(e) => {
-        if (e.target instanceof HTMLElement && e.target.closest('a')) return
+        if (e.target instanceof HTMLElement && e.target.closest('a, .Explanation')) return
         if (swiped.current) {
           swiped.current = false
           return
@@ -340,6 +343,7 @@ function FlashcardView({
       <div className="Flashcard-body" key={flipped ? 'back' : 'front'}>
         <SideContent side={flipped ? back : front} />
       </div>
+      {explanation && <Explanation text={explanation} />}
       <p className="Flashcard-hint">{m.flashcards.clickToFlip}</p>
     </article>
   )

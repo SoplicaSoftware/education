@@ -17,6 +17,8 @@ export interface Card {
   front: Side
   back: Side
   choices: Choice[]
+  /** Longer explanation and sources, shown after answering. The back stays a short answer. */
+  explanation?: string
 }
 
 export interface Deck {

@@ -77,6 +77,7 @@ npm run build    # produkcyjny build do dist/
         {
           "front": { "text": "Co to za mikrostruktura?", "image": "data:image/png;base64,..." },
           "back": { "text": "Perlit – mieszanina ferrytu $\\alpha$ i cementytu" },
+          "explanation": "Powstaje przy wolnym chłodzeniu stali eutektoidalnej.\n\nŹródło: https://...",
           "choices": [
             { "text": "Perlit", "correct": true },
             { "text": "Martenzyt", "correct": false }
@@ -88,4 +89,4 @@ npm run build    # produkcyjny build do dist/
 }
 ```
 
-Import przyjmuje też pojedynczy zestaw albo tablicę zestawów. Pola `id`, `image` i `choices` są opcjonalne.
+Import przyjmuje też pojedynczy zestaw albo tablicę zestawów. Pola `id`, `image`, `explanation` i `choices` są opcjonalne. Tył (`back`) powinien być krótką odpowiedzią, a szczegóły i źródła idą do `explanation`: aplikacja pokazuje je dopiero po odpowiedzi, zwinięte pod odpowiedzią. Adresy `https://` w tekście fiszek stają się klikalnymi linkami.

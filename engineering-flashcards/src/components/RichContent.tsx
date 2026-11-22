@@ -1,8 +1,9 @@
+import { Collapsible } from '@base-ui/react/collapsible'
 import { Dialog } from '@base-ui/react/dialog'
 import { useMemo, useState } from 'react'
 import { renderRichText } from '../lib/math'
 import type { Side } from '../types'
-import { Button } from './ui'
+import { Button, ChevronRightIcon } from './ui'
 import { useT } from '../lib/i18n'
 
 export function RichText({ text }: { text: string }) {
@@ -39,6 +40,22 @@ export function ZoomableImage({ src, alt }: { src: string; alt: string }) {
         </Dialog.Portal>
       </Dialog.Root>
     </>
+  )
+}
+
+/** A card's explanation, folded behind a toggle so the short answer stays easy to scan. */
+export function Explanation({ text, defaultOpen = false }: { text: string; defaultOpen?: boolean }) {
+  const m = useT()
+  return (
+    <Collapsible.Root className="Explanation" defaultOpen={defaultOpen}>
+      <Collapsible.Trigger className="Explanation-trigger" onClick={(e) => e.stopPropagation()}>
+        <ChevronRightIcon className="Collapsible-icon" />
+        {m.common.explanation}
+      </Collapsible.Trigger>
+      <Collapsible.Panel className="Explanation-panel" onClick={(e) => e.stopPropagation()}>
+        <RichText text={text} />
+      </Collapsible.Panel>
+    </Collapsible.Root>
   )
 }
 

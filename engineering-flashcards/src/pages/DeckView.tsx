@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { EmptyState, Page, Section, TopBar } from '../components/Layout'
-import { SideContent } from '../components/RichContent'
+import { Explanation, SideContent } from '../components/RichContent'
 import {
   Button,
   ChevronRightIcon,
@@ -169,6 +169,11 @@ export function DeckView({ deck }: { deck: Deck }) {
                             </li>
                           ))}
                         </ul>
+                      )}
+                      {card.explanation && (
+                        <div className="CardRow-explanation">
+                          <Explanation text={card.explanation} />
+                        </div>
                       )}
                     </li>
                   )
