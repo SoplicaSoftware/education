@@ -4,7 +4,7 @@
   "decks": [
     {
       "title": "Ćwiczenie 11 – Moduł Younga",
-      "description": "Zagadnienia kontrolne do ćwiczenia 11 z Pracowni Fizycznej WFiIS AGH. Odpowiedzi na podstawie opisu ćwiczenia i literatury – źródło pod każdą odpowiedzią.",
+      "description": "Zagadnienia kontrolne do ćwiczenia 11 z Pracowni Fizycznej WFiIS AGH. Odpowiedzi zgodne z opisem ćwiczenia (11_opis) i instrukcją wykonania (11_wykon) – źródło pod każdą odpowiedzią.",
       "cards": [
         {
           "id": "cw11-1",
@@ -39,7 +39,7 @@
             "text": "Moduł Younga – podaj definicję i jednostkę."
           },
           "back": {
-            "text": "Stała materiałowa: współczynnik proporcjonalności między naprężeniem a odkształceniem względnym w zakresie sprężystym:\n$E = \\dfrac{\\sigma}{\\varepsilon} = \\dfrac{F\\,l}{S\\,\\Delta l}$\n\nJednostka: paskal, $\\mathrm{Pa} = \\mathrm{N/m^2}$ (w praktyce GPa), np. stal ≈ 210 GPa, mosiądz ≈ 100 GPa, miedź ≈ 110–130 GPa.\n\nInterpretacja: naprężenie, przy którym długość ciała by się podwoiła, gdyby prawo Hooke’a nadal obowiązywało.\n\nŹródło: https://pf.agh.edu.pl/home/wfiis/pracfiz/Opisy_cwiczen/11_opis.pdf"
+            "text": "Stała materiałowa: współczynnik proporcjonalności między naprężeniem a odkształceniem względnym w zakresie sprężystym:\n$E = \\dfrac{\\sigma}{\\varepsilon} = \\dfrac{F\\,l}{S\\,\\Delta l}$\n\nJednostka: paskal, $\\mathrm{Pa} = \\mathrm{N/m^2}$ (w praktyce GPa), np. stal 210–220 GPa, mosiądz 100 GPa, miedź 110–130 GPa (tabela 1 w opisie ćwiczenia).\n\nInterpretacja: naprężenie, przy którym długość ciała by się podwoiła, gdyby prawo Hooke’a nadal obowiązywało.\n\nŹródło: https://pf.agh.edu.pl/home/wfiis/pracfiz/Opisy_cwiczen/11_opis.pdf"
           }
         },
         {
@@ -48,7 +48,7 @@
             "text": "Co dzieje się z drutem po przekroczeniu granicy sprężystości?"
           },
           "back": {
-            "text": "Zaczyna się odkształcenie nieodwracalne (plastyczne): drut nie wraca do pierwotnej długości po zdjęciu obciążenia – zostaje trwale wydłużony, a prawo Hooke’a przestaje obowiązywać.\n\nKolejno na krzywej $\\sigma(\\varepsilon)$: granica proporcjonalności → granica sprężystości → naprężenie maksymalne → zerwanie drutu.\n\nDlatego w ćwiczeniu nie przekracza się dopuszczalnego obciążenia (stal 10 kg, mosiądz 6 kg).\n\nŹródło: https://pf.agh.edu.pl/home/wfiis/pracfiz/Opisy_cwiczen/11_opis.pdf\nhttps://pf.agh.edu.pl/home/wfiis/pracfiz/Opisy_cwiczen/LAB_011_Orzechowska.pdf"
+            "text": "Zaczyna się odkształcenie nieodwracalne (plastyczne): drut nie wraca do pierwotnej długości po zdjęciu obciążenia – zostaje trwale wydłużony, a prawo Hooke’a przestaje obowiązywać.\n\nKolejno na krzywej $\\sigma(\\varepsilon)$: granica proporcjonalności → granica sprężystości → naprężenie maksymalne → zerwanie drutu. Materiały kruche nie mają zakresu plastycznego – po przekroczeniu określonego naprężenia po prostu pękają.\n\nDlatego w ćwiczeniu nie przekracza się dopuszczalnego obciążenia (drut stalowy 10 kg, mosiężny i miedziany 6 kg).\n\nŹródło: https://pf.agh.edu.pl/home/wfiis/pracfiz/Opisy_cwiczen/11_opis.pdf\nhttps://pf.agh.edu.pl/home/wfiis/pracfiz/Opisy_cwiczen/11_wykon.pdf"
           }
         },
         {
@@ -57,7 +57,7 @@
             "text": "Dlaczego zmiany długości drutu są dwa razy mniejsze od zmian długości podawanych przez czujnik?"
           },
           "back": {
-            "text": "Bo czujnik mikrometryczny jest sprzężony z drutem przez dźwignię. Drut i szalka są zamocowane w połowie odległości między osią obrotu dźwigni a punktem styku z czujnikiem, więc koniec dźwigni przesuwa się dwa razy bardziej niż drut się wydłuża:\n$\\Delta l = \\dfrac{\\text{odczyt czujnika}}{2}$\n\nŹródło: https://pf.agh.edu.pl/home/wfiis/pracfiz/Opisy_cwiczen/11_opis.pdf"
+            "text": "Bo czujnik mikrometryczny jest sprzężony z drutem przez dźwignię. Drut i szalka są zamocowane w połowie odległości między osią obrotu dźwigni a punktem styku z czujnikiem, więc koniec dźwigni przesuwa się dwa razy bardziej niż drut się wydłuża:\n$\\Delta l = \\dfrac{\\text{odczyt czujnika}}{2}$\n\nDlatego w opracowaniu średnie wydłużenie z odczytów przy dokładaniu ($cz\\uparrow$) i zdejmowaniu ($cz\\downarrow$) ciężarków liczy się jako $\\Delta l = \\dfrac{cz\\uparrow + cz\\downarrow}{4}$ – dzielenie przez 4, a nie przez 2, uwzględnia dźwignię.\n\nŹródło: https://pf.agh.edu.pl/home/wfiis/pracfiz/Opisy_cwiczen/11_opis.pdf\nhttps://pf.agh.edu.pl/home/wfiis/pracfiz/Opisy_cwiczen/11_wykon.pdf"
           }
         },
         {
@@ -66,7 +66,7 @@
             "text": "Czym różni się wzór definicyjny modułu Younga od wzoru roboczego?"
           },
           "back": {
-            "text": "Definicyjny (prawo Hooke’a): $E = \\dfrac{F\\,l}{S\\,\\Delta l}$ – dla pojedynczej pary $F$, $\\Delta l$ i pola przekroju $S$.\n\nRoboczy: $E = \\dfrac{4\\,l}{\\pi d^2 a}$\n• zamiast pojedynczego $\\Delta l / F$ używa współczynnika nachylenia $a$ prostej $\\Delta l = aF + b$ dopasowanej do wielu pomiarów ($a = \\dfrac{l}{ES}$),\n• pole przekroju wyraża przez zmierzoną średnicę drutu: $S = \\dfrac{\\pi d^2}{4}$.\n\nŹródło: https://pf.agh.edu.pl/home/wfiis/pracfiz/Opisy_cwiczen/11_opis.pdf"
+            "text": "Definicyjny – wzór (1) z prawa Hooke’a: $\\Delta l = \\dfrac{F\\,l}{E\\,S}$, czyli $E = \\dfrac{F\\,l}{S\\,\\Delta l}$ – dla pojedynczej pary $F$, $\\Delta l$ i pola przekroju $S$.\n\nRoboczy: $E = \\dfrac{4\\,l}{\\pi d^2 a}$\n• zamiast pojedynczego $\\Delta l / F$ używa współczynnika nachylenia $a$ prostej $\\Delta l = aF + b$ dopasowanej do wielu pomiarów ($a = \\dfrac{l}{ES}$),\n• pole przekroju wyraża przez zmierzoną średnicę drutu: $S = \\dfrac{\\pi d^2}{4}$.\n\nJeśli prostą dopasowuje się do wykresu $\\Delta l(m)$ zamiast $\\Delta l(F)$, do wzoru roboczego trzeba dodać $g$: $E = \\dfrac{4\\,l\\,g}{\\pi d^2 a}$.\n\nŹródło: https://pf.agh.edu.pl/home/wfiis/pracfiz/Opisy_cwiczen/11_opis.pdf\nhttps://pf.agh.edu.pl/home/wfiis/pracfiz/Opisy_cwiczen/11_wykon.pdf"
           }
         }
       ]
