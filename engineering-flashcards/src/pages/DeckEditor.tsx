@@ -189,6 +189,26 @@ const CardEditor = memo(function CardEditor({
           placeholder={card.choices.some((c) => c.correct) ? m.editor.backOptional : undefined}
         />
       </div>
+      <Field label={m.editor.explanation} description={m.editor.explanationHint}>
+        <FieldControl
+          render={<TextArea rows={3} />}
+          value={card.explanation ?? ''}
+          onValueChange={(text) =>
+            onChange(card.id, (c) => {
+              const next: Card = { ...c, explanation: text }
+              if (!text) delete next.explanation
+              return next
+            })
+          }
+          placeholder={m.editor.explanationPlaceholder}
+        />
+      </Field>
+      {card.explanation && hasMath(card.explanation) && (
+        <div className="Preview">
+          <span className="Hint">{m.editor.preview}</span>
+          <RichText text={card.explanation} />
+        </div>
+      )}
       <ChoicesEditor choices={card.choices} onChange={setChoices} />
     </li>
   )

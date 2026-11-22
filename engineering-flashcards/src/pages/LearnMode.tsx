@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Button as BaseButton } from '@base-ui/react/button'
 import { EmptyState, Page, Section, TopBar } from '../components/Layout'
-import { SideContent } from '../components/RichContent'
+import { Explanation, SideContent } from '../components/RichContent'
 import {
   Button,
   CheckIcon,
@@ -682,6 +682,7 @@ function FeedbackPanel({
           <SideContent side={question.answer} />
         </div>
       )}
+      {question.card.explanation && <Explanation text={question.card.explanation} defaultOpen />}
       <div className="Row">
         <Button variant="primary" onClick={onNext}>
           {m.learn.next}
