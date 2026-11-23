@@ -22,7 +22,7 @@
             "text": "Pojęcie naprężenia. Rodzaje naprężeń."
           },
           "back": {
-            "text": "Definicja: siła przypadająca na jednostkę pola przekroju.\nWzór: $\\sigma = \\dfrac{F}{S}$\nJednostka: Pa = N/m²\nRodzaje: normalne $\\sigma$ – siła prostopadła do przekroju (rozciąganie, ściskanie); styczne $\\tau$ – siła równoległa do przekroju (ścinanie, skręcanie)."
+            "text": "Definicja: wielkość fizyczna opisująca siły wewnętrzne działające w materiale, wyrażona jako siła przypadająca na jednostkę pola przekroju.\nWzór: $\\sigma = \\dfrac{F}{S}$\nJednostka: Pa = N/m²\nRodzaje: normalne $\\sigma$ – siła prostopadła do przekroju (rozciąganie, ściskanie); styczne $\\tau$ – siła równoległa do przekroju (ścinanie, skręcanie)."
           },
           "explanation": "Rodzaj naprężenia zależy od kierunku siły względem przekroju:\n• normalne $\\sigma$ – siła prostopadła do przekroju; powstaje przy rozciąganiu i ściskaniu (oraz zginaniu),\n• styczne $\\tau$ – siła leży w płaszczyźnie przekroju; powstaje przy ścinaniu i skręcaniu.\n\nJednostka: $[\\sigma] = \\dfrac{\\mathrm{N}}{\\mathrm{m^2}} = \\mathrm{Pa}$. W wytrzymałości materiałów zwykle podaje się MPa.\n\nW ćwiczeniu z modułem Younga drut jest rozciągany ciężarkami, więc występuje naprężenie normalne rozciągające. Naprężenia styczne bada się przy wyznaczaniu modułu sztywności $G$.\n\nŹródła:\nhttps://pf.agh.edu.pl/home/wfiis/pracfiz/Opisy_cwiczen/11_opis.pdf\nhttps://pkm.edu.pl/baza-wiedzy/materialy-konstrukcyjne/stale/podstawowe-warunki-wytrzymalosciowe/"
         },
