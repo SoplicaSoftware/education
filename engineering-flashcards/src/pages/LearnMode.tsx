@@ -5,6 +5,7 @@ import { Explanation, SideContent } from '../components/RichContent'
 import {
   Button,
   CheckIcon,
+  ConfirmDialog,
   Field,
   FieldControl,
   Fieldset,
@@ -25,6 +26,7 @@ import {
   type Stage,
 } from '../lib/learn'
 import { usePref } from '../lib/prefs'
+import { clearProgress, loadProgress, progressKey, saveProgress, sameCards } from '../lib/progress'
 import { navigate } from '../lib/router'
 import { useStars } from '../lib/stars'
 import { pluralCards, shuffle, studyableCards } from '../lib/utils'
@@ -51,6 +53,16 @@ interface Session {
   roundNumber: number
 }
 
+type SavedSession = Omit<Session, 'attempted'> & { attempted: string[] }
+interface SavedLearn {
+  phase: Phase
+  session: SavedSession
+}
+
+function restoreLearn(saved: SavedLearn | null, ids: string[]): { phase: Phase; session: Session } | null {
+  if (!saved?.session || saved.phase === 'setup' || !sameCards(saved.session.order, ids)) return null
+  return { phase: saved.phase, session: { ...saved.session, attempted: new Set(saved.session.attempted) } }
+}
 
 function nextRound(order: string[], stages: Record<string, Stage>, attempted: Set<string>, size: number) {
   const open = order.filter((id) => stages[id] !== 2)
@@ -74,6 +86,9 @@ export function LearnMode({ deck, starredOnly }: { deck: Deck; starredOnly: bool
   const [session, setSession] = useState<Session | null>(null)
   const [question, setQuestion] = useState<Question | null>(null)
   const [feedback, setFeedback] = useState<Feedback | null>(null)
+  const [resetOpen, setResetOpen] = useState(false)
+  const storageKey = progressKey('learn', deck.id, starredOnly)
+  const [restored] = useState(() => restoreLearn(loadProgress<SavedLearn>(storageKey), cards.map((c) => c.id)))
 
   const ask = useCallback(
     (s: Session) => {
@@ -180,6 +195,35 @@ export function LearnMode({ deck, starredOnly }: { deck: Deck; starredOnly: bool
     }
   }, [phase, next, settingsOpen])
 
+  // Resume a saved session once on mount; an answered question continues with the next one.
+  useEffect(() => {
+    if (!restored) return
+    const s = restored.session
+    setSession(s)
+    if (restored.phase === 'summary' || restored.phase === 'done') {
+      setPhase(restored.phase)
+      return
+    }
+    const pos = restored.phase === 'feedback' ? s.pos + 1 : s.pos
+    if (pos < s.round.length) ask({ ...s, pos })
+    else setPhase(s.order.every((id) => s.stages[id] === 2) ? 'done' : 'summary')
+    if (pos !== s.pos) setSession({ ...s, pos })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  useEffect(() => {
+    if (phase === 'setup' || !session) return
+    saveProgress(storageKey, { phase, session: { ...session, attempted: [...session.attempted] } } satisfies SavedLearn)
+  }, [phase, session, storageKey])
+
+  const resetProgress = () => {
+    clearProgress(storageKey)
+    setSession(null)
+    setQuestion(null)
+    setFeedback(null)
+    setPhase('setup')
+  }
+
   const counts = useMemo(() => {
     const c = { new: 0, learning: 0, mastered: 0 }
     for (const card of cards) {
@@ -202,7 +246,24 @@ export function LearnMode({ deck, starredOnly }: { deck: Deck; starredOnly: bool
         back={`/deck/${deck.id}`}
         title={starredOnly ? m.learn.titleStarred : m.common.learn}
         subtitle={deck.title}
-        actions={phase !== 'setup' && <Button onClick={() => setSettingsOpen(true)}>{m.common.settings}</Button>}
+        actions={
+          phase !== 'setup' && (
+            <>
+              <Button variant="ghost" onClick={() => setResetOpen(true)}>
+                {m.common.resetProgress}
+              </Button>
+              <Button onClick={() => setSettingsOpen(true)}>{m.common.settings}</Button>
+            </>
+          )
+        }
+      />
+      <ConfirmDialog
+        open={resetOpen}
+        onOpenChange={setResetOpen}
+        title={m.common.resetProgressTitle}
+        description={m.common.resetProgressText}
+        confirmLabel={m.common.resetProgress}
+        onConfirm={resetProgress}
       />
 
       {starredOnly && cards.length === 0 ? (

@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { EmptyState, Page, Section, TopBar } from '../components/Layout'
 import { Explanation, SideContent } from '../components/RichContent'
-import { Button, ProgressBar, Sheet, StarToggle, Switch, notify } from '../components/ui'
+import { Button, ConfirmDialog, ProgressBar, Sheet, StarToggle, Switch, notify } from '../components/ui'
 import { usePref } from '../lib/prefs'
+import { clearProgress, loadProgress, progressKey, saveProgress } from '../lib/progress'
 import { navigate } from '../lib/router'
 import { useStars } from '../lib/stars'
 import { isSideEmpty, pluralCards, shuffle, studyableCards } from '../lib/utils'
@@ -16,6 +17,14 @@ interface Settings {
 }
 
 const DEFAULTS: Settings = { shuffle: false, startWithBack: false, track: true }
+
+interface SavedFlashcards {
+  order: string[]
+  index: number
+  known: string[]
+  learning: string[]
+  history: string[]
+}
 
 function backSide(card: Card): Side {
   if (!isSideEmpty(card.back) || card.choices.length === 0) return card.back
@@ -40,12 +49,25 @@ export function FlashcardsMode({ deck, starredOnly }: { deck: Deck; starredOnly:
     (ids: string[]) => (settings.shuffle ? shuffle(ids) : ids),
     [settings.shuffle],
   )
-  const [order, setOrder] = useState(() => makeOrder(cards.map((c) => c.id)))
-  const [index, setIndex] = useState(0)
+  const storageKey = progressKey('flashcards', deck.id, starredOnly)
+  // Saved progress is used only if every card in it still exists in the deck.
+  const [saved] = useState(() => {
+    const s = loadProgress<SavedFlashcards>(storageKey)
+    const ids = new Set(cards.map((c) => c.id))
+    // The order may be a subset ("repeat the ones you don't know"), so check membership only.
+    return s?.order?.length && s.order.every((id) => ids.has(id)) ? s : null
+  })
+  const [order, setOrder] = useState(() => saved?.order ?? makeOrder(cards.map((c) => c.id)))
+  const [index, setIndex] = useState(() => Math.min(saved?.index ?? 0, saved?.order.length ?? 0))
   const [flipped, setFlipped] = useState(false)
-  const [known, setKnown] = useState<Set<string>>(new Set())
-  const [learning, setLearning] = useState<Set<string>>(new Set())
-  const [history, setHistory] = useState<string[]>([])
+  const [known, setKnown] = useState<Set<string>>(() => new Set(saved?.known))
+  const [learning, setLearning] = useState<Set<string>>(() => new Set(saved?.learning))
+  const [history, setHistory] = useState<string[]>(() => saved?.history ?? [])
+  const [resetOpen, setResetOpen] = useState(false)
+
+  useEffect(() => {
+    saveProgress(storageKey, { order, index, known: [...known], learning: [...learning], history } satisfies SavedFlashcards)
+  }, [storageKey, order, index, known, learning, history])
 
   const toggleStar = stars.toggle
   const byId = useMemo(() => new Map(cards.map((c) => [c.id, c])), [cards])
@@ -150,7 +172,25 @@ export function FlashcardsMode({ deck, starredOnly }: { deck: Deck; starredOnly:
         back={`/deck/${deck.id}`}
         title={starredOnly ? m.flashcards.titleStarred : m.common.flashcards}
         subtitle={deck.title}
-        actions={<Button onClick={() => setSettingsOpen(true)}>{m.common.settings}</Button>}
+        actions={
+          <>
+            <Button variant="ghost" onClick={() => setResetOpen(true)}>
+              {m.common.resetProgress}
+            </Button>
+            <Button onClick={() => setSettingsOpen(true)}>{m.common.settings}</Button>
+          </>
+        }
+      />
+      <ConfirmDialog
+        open={resetOpen}
+        onOpenChange={setResetOpen}
+        title={m.common.resetProgressTitle}
+        description={m.common.resetProgressText}
+        confirmLabel={m.common.resetProgress}
+        onConfirm={() => {
+          clearProgress(storageKey)
+          restart(cards.map((c) => c.id))
+        }}
       />
 
       {starredOnly && cards.length === 0 ? (
